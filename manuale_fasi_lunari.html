@@ -1,0 +1,209 @@
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuale Utente - Cruscotto Lunare</title>
+    <style>
+        :root {
+            --bg-color: #1a1a20;
+            --text-color: #e0e0e0;
+            --accent-color: #FFD700; /* Oro */
+            --highlight-color: #4facfe; /* Azzurro */
+            --panel-bg: #25252b;
+            --border-color: #444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f0f13;
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .manual-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--highlight-color);
+            margin-top: 30px;
+            border-left: 4px solid var(--highlight-color);
+            padding-left: 10px;
+        }
+
+        h3 {
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background-color: var(--panel-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .icon {
+            font-style: normal;
+            margin-right: 5px;
+        }
+
+        .btn-example {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background-color: #333;
+            border: 1px solid #555;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .grid-explanation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-explanation { grid-template-columns: 1fr; }
+            .manual-container { padding: 20px; }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.8em;
+            color: #666;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="manual-container">
+
+    <h1>Manuale d'Uso: Cruscotto Lunare Integrato</h1>
+    
+    <p>Benvenuto nel <strong>Simulatore Astronomico Lunare</strong>. Questo strumento è stato progettato per visualizzare in tempo reale la fase, la posizione e il movimento della Luna nel cielo, permettendoti di comprendere le dinamiche celesti sia dal punto di vista "visivo" che "scientifico".</p>
+
+    <div class="highlight-box">
+        <strong>?? Guida Rapida:</strong> Imposta la tua data e posizione geografica usando i controlli in basso, poi premi <span class="btn-example" style="background:#f44336;">PLAY</span> per vedere l'animazione del movimento lunare.
+    </div>
+
+    <h2>1. Panoramica dell'Interfaccia</h2>
+    <p>Il cruscotto è diviso in due aree principali (Q1 e Q2) e una barra dei comandi inferiore.</p>
+
+    <div class="grid-explanation">
+        <div>
+            <h3>Q1. Fase Lunare (Sinistra)</h3>
+            <p>Questo pannello mostra l'aspetto "fisico" della Luna come apparirebbe vista attraverso un telescopio.</p>
+            <ul>
+                <li><strong>L'Immagine:</strong> Mostra la parte illuminata dal Sole. L'ombra (il terminatore) è calcolata geometricamente.</li>
+                <li><strong>Fase:</strong> Il nome astronomico della fase corrente (es. <em>Gibbosa Crescente</em>).</li>
+                <li><strong>Regola Mnemonica:</strong> Appare una frase in corsivo ("Gobba a ponente...") per aiutarti a riconoscere se la luna cresce o cala.</li>
+                <li><strong>Età (Age):</strong> I giorni trascorsi dall'ultima Luna Nuova (0.0 = Nuova, 14.8 = Piena, 29.5 = Fine Ciclo).</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Q2. Percorso nel Cielo (Destra)</h3>
+            <p>Questo grafico cartesiano rappresenta la volta celeste vista dall'osservatore.</p>
+            <ul>
+                <li><strong>Asse Orizzontale (X):</strong> I punti cardinali (Nord, Est, Sud, Ovest).</li>
+                <li><strong>Asse Verticale (Y):</strong> L'altezza in gradi (0° = Orizzonte, 90° = Zenit).</li>
+                <li><strong>Linea Gialla:</strong> La traiettoria che la Luna percorre durante la giornata.</li>
+                <li><strong>Pallino Rosso:</strong> La posizione esatta della Luna nell'ora selezionata.</li>
+                <li><strong>Bussola:</strong> Un piccolo radar che indica la direzione in cui guardare.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>2. Le Modalità di Visualizzazione</h2>
+    <p>È possibile cambiare il sistema di riferimento temporale cliccando sul pulsante arancione <span class="btn-example" style="background: linear-gradient(90deg, #ff9800, #ff5722);">Passa a...</span>.</p>
+
+    <h3>?? Modo Giorno Solare (Default)</h3>
+    <p>Il grafico mostra il cielo dalle ore <strong>00:00 alle 24:00</strong> del nostro orologio civile.</p>
+    <ul>
+        <li>Utile per rispondere a domande come: <em>"Dove sarà la luna stasera a cena?"</em>.</li>
+        <li>Se mandi avanti i giorni, vedrai la parabola della Luna spostarsi verso destra (la Luna ritarda di circa 50 minuti ogni giorno).</li>
+    </ul>
+
+    <h3>?? Modo Giorno Lunare</h3>
+    <p>Il grafico si "centra" sulla Luna. L'asse temporale si adatta per mostrare l'intero passaggio della Luna (dal sorgere al tramonto), anche se questo avviene a cavallo tra due giorni diversi.</p>
+    <ul>
+        <li>Utile per studiare la durata del fenomeno senza interruzioni grafiche a mezzanotte.</li>
+        <li>Compaiono le date e ore esatte di inizio e fine del giorno lunare (Transito -12h / Transito +12h).</li>
+    </ul>
+
+    <h2>3. I Dati Astronomici</h2>
+    <p>Sotto il grafico del cielo (Q2), trovi tre riquadri fondamentali:</p>
+    <ul>
+        <li><strong>Sorge ?:</strong> L'ora e la data in cui la Luna spunta dall'orizzonte Est.</li>
+        <li><strong>Culmine ?:</strong> L'ora e la data in cui la Luna raggiunge il punto più alto (Meridiano Sud).</li>
+        <li><strong>Tramonta ?:</strong> L'ora e la data in cui la Luna scende sotto l'orizzonte Ovest.</li>
+    </ul>
+
+    <h2>4. Pannello di Controllo</h2>
+    <p>La barra inferiore ti permette di navigare nel tempo e nello spazio.</p>
+
+    <h3>?? Data e Navigazione</h3>
+    <ul>
+        <li><strong>Calendario:</strong> Clicca sulla data per sceglierne una specifica.</li>
+        <li><strong>-1 / +1:</strong> Sposta la simulazione avanti o indietro di un giorno solare (o lunare, a seconda della modalità).</li>
+        <li><strong>PLAY / STOP:</strong> Avvia un'animazione automatica per vedere il mutare delle fasi in accelerata.</li>
+    </ul>
+
+    <h3>?? Navigazione per Fasi</h3>
+    <p>Questa griglia di pulsanti è molto potente per saltare nel tempo:</p>
+    <ul>
+        <li><strong>Pulsanti Centrali (es. "Piena"):</strong> Portano alla prossima Luna Piena (o Nuova, etc.) più vicina alla data attuale.</li>
+        <li><strong>Frecce << e >>:</strong> Permettono di saltare esattamente di un mese lunare indietro o avanti, mantenendo la stessa fase (es. vedere la Luna Piena di ogni mese dell'anno).</li>
+    </ul>
+
+    <h3>?? Posizione (Coordinate)</h3>
+    <ul>
+        <li><strong>Latitudine (Lat):</strong> Spostando questo slider simuli un osservatore che viaggia dal Polo Nord all'Equatore al Polo Sud.
+            <br><em>Nota: Se vai nell'emisfero Sud (valori negativi), vedrai la Luna nel quadro Q1 capovolgersi, come accade nella realtà!</em></li>
+        <li><strong>Longitudine (Lon):</strong> Aggiusta l'orario degli eventi in base al fuso orario geografico.</li>
+    </ul>
+
+    <footer>
+        &copy; 2025 Simulatore Astronomico - Manuale Utente v1.0
+    </footer>
+
+</div>
+
+</body>
+</html>

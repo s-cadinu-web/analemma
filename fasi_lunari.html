@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulatore Lunare V48 - Finale Corretto</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #0f0f13; 
+            color: #eee; 
+            margin: 0; 
+            padding: 15px; 
+            display: flex; 
+            justify-content: center;
+        }
+        
+        .main-container { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            width: 100%; 
+            max-width: 1100px; 
+        }
+
+        /* HEADER */
+        .header { text-align: center; margin-bottom: 5px; }
+        h1 { margin: 0; color: #eee; font-size: 1.4em; }
+        .date-main { color: #FFD700; font-size: 1.2em; font-weight: bold; margin-top: 2px; }
+        .date-sub { color: #aaa; font-size: 0.9em; font-style: italic; }
+
+        /* AREA GRAFICA */
+        .top-row { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+
+        .panel { 
+            background: #1a1a20; 
+            border-radius: 12px; 
+            border: 1px solid #333; 
+            padding: 15px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        h2 { margin: 0 0 10px 0; color: #FFD700; font-size: 1.1em; width: 100%; text-align: center; border-bottom: 1px solid #444; padding-bottom: 5px; }
+
+        /* Q1: LUNA */
+        .panel-q1 { flex: 0 0 300px; }
+        .moon-canvas-box {
+            width: 240px; height: 240px; 
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #1e1e28 0%, #0a0a0f 70%);
+            border-radius: 50%; border: 1px solid #444; margin-bottom: 10px;
+        }
+        #moonCanvas { width: 240px; height: 240px; border-radius: 50%; }
+
+        /* Q2: CIELO */
+        .panel-q2 { flex: 1; min-width: 450px; }
+        .sky-canvas-box {
+            width: 100%; height: 240px;
+            background: #111; border-radius: 8px; border: 1px solid #444; position: relative;
+        }
+        #skyCanvas { width: 100%; height: 100%; }
+
+        /* INFO Q2 */
+        .q2-dashboard {
+            display: grid; grid-template-columns: 1fr 100px 1fr; 
+            gap: 10px; width: 100%; margin-top: 10px; 
+            background: #25252b; padding: 8px; border-radius: 8px; border: 1px solid #444;
+            align-items: center;
+        }
+        .info-col { text-align: center; display: flex; flex-direction: column; gap: 2px; }
+        .info-label { font-size: 0.7em; color: #888; text-transform: uppercase; }
+        .info-val { font-size: 1.1em; font-weight: bold; color: #fff; }
+        .info-sub { font-size: 0.8em; color: #4facfe; }
+        
+        .compass-box { display: flex; justify-content: center; flex-direction: column; align-items: center; }
+        #compassCanvas { width: 60px; height: 60px; background: #1a1a20; border-radius: 50%; border: 1px solid #555; }
+
+        /* BOX EVENTI */
+        .events-container {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; 
+            gap: 8px; width: 100%; margin-top: 10px;
+        }
+        .event-box {
+            background: #252530; border: 1px solid #444; border-radius: 6px; padding: 5px; text-align: center;
+        }
+        .event-time { color: #fff; font-size: 1.1em; font-weight: bold; }
+        .event-day { color: #4facfe; font-size: 0.8em; font-weight: bold; }
+
+        /* INFO LUNARI FISSE */
+        .lunar-info-placeholder {
+            width: 100%; height: 45px !important; margin-top: 8px;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .lunar-info-content { 
+            width: 100%; text-align: center; font-size: 0.85em; color: #bbb; 
+            background: #2a2a35; padding: 6px; border-radius: 4px; border: 1px solid #444;
+        }
+        .lunar-time-highlight { color: #FFD700; font-weight: bold; }
+
+        .slider-box { width: 100%; margin-top: 5px; background: #222; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px; box-sizing: border-box; }
+        input[type=range] { flex: 1; cursor: pointer; accent-color: #4facfe; height: 20px; }
+
+        /* CONTROLLI */
+        .controls-bar {
+            background: #25252b; border-radius: 12px; border: 1px solid #444; padding: 15px 20px;
+            display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 30px;
+        }
+        .ctrl-column { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+        .ctrl-title { font-size: 0.75em; color: #aaa; text-transform: uppercase; font-weight: bold; margin-bottom: 2px; }
+
+        button { cursor: pointer; border: none; border-radius: 4px; font-weight: bold; padding: 6px 10px; transition: all 0.2s; font-size: 0.9em; }
+        button:hover { filter: brightness(1.2); }
+        .btn-act { background: #4CAF50; color: white; }
+        .btn-play { background: #f44336; color: white; padding: 8px 25px; font-size: 1em; border-radius: 6px; }
+        .btn-mode { background: linear-gradient(90deg, #ff9800, #ff5722); color: white; margin-bottom: 5px; font-size: 0.9em; padding: 6px 12px;}
+        
+        /* STILE PULSANTE MANUALE */
+        .btn-help { 
+            background: #455A64; 
+            color: white; 
+            width: 100%; 
+            margin-bottom: 5px; 
+            border: 1px solid #607D8B;
+        }
+        .btn-help:hover { 
+            background: #607D8B; 
+            filter: brightness(1.2); 
+        }
+
+        .phase-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; }
+        .phase-group { display: flex; align-items: center; justify-content: center; gap: 1px; }
+        .btn-ph { background: #333; color: #ccc; font-size: 11px; padding: 6px 0; border: 1px solid #555; width: 70px; text-align: center; }
+        .btn-jmp { background: #222; color: #4facfe; font-size: 11px; padding: 6px 8px; border: 1px solid #555; min-width: 25px; }
+        .btn-ph:hover, .btn-jmp:hover { background: #444; color: #fff; }
+
+        .coord-row { display: flex; gap: 8px; align-items: center; }
+        .coord-label { font-size: 0.8em; color: #aaa; width: 25px; }
+        .coord-val { font-size: 0.8em; color: #4facfe; width: 35px; text-align: right; }
+        input[type=date] { background: #333; color: #FFD700; border: 1px solid #555; padding: 4px; border-radius: 4px; font-weight: bold; font-size: 0.9em; }
+
+        /* Regola Mnemonica */
+        .mnemo-text { font-size: 0.75em; color: #888; margin-top: 5px; font-style: italic; font-family: "Times New Roman", serif;}
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <div class="header">
+        <h1>Cruscotto Lunare</h1>
+        <div id="fullDateDisplay" class="date-main">...</div>
+        <div id="lunarDateDisplay" class="date-sub">...</div>
+    </div>
+
+    <div class="top-row">
+        
+        <div class="panel panel-q1">
+            <h2>Fase Lunare</h2>
+            <div class="moon-canvas-box">
+                <canvas id="moonCanvas" width="240" height="240"></canvas>
+            </div>
+            <div class="info-col">
+                <div id="phaseName" style="color:#4facfe; font-size:1.2em; font-weight:bold;">...</div>
+                <div id="mnemoText" class="mnemo-text">...</div>
+                <div style="color:#aaa; margin-top:5px; font-size:0.9em;">Et&agrave;: <span id="ageVal" style="color:#fff;">...</span></div>
+            </div>
+        </div>
+
+        <div class="panel panel-q2">
+            <h2>Percorso nel Cielo <span id="q2ModeLabel" style="font-size:0.7em; color:#888;">(Solare)</span></h2>
+            
+            <div class="sky-canvas-box">
+                <canvas id="skyCanvas" width="1000" height="480"></canvas>
+            </div>
+            
+            <div class="events-container">
+                <div class="event-box">
+                    <div class="info-label">Sorge &#8599;</div>
+                    <div id="riseTime" class="event-time">--:--</div>
+                    <div id="riseDay" class="event-day">--</div>
+                </div>
+                <div class="event-box">
+                    <div class="info-label">Culmine &#8595;</div>
+                    <div id="culmTime" class="event-time">--:--</div>
+                    <div id="culmDay" class="event-day">--</div>
+                </div>
+                <div class="event-box">
+                    <div class="info-label">Tramonta &#8600;</div>
+                    <div id="setTime" class="event-time">--:--</div>
+                    <div id="setDay" class="event-day">--</div>
+                </div>
+            </div>
+
+            <div class="lunar-info-placeholder">
+                <div id="lunarInfoContent" class="lunar-info-content">
+                    Inizio G. Lunare: <span id="lunarStart" class="lunar-time-highlight">--</span> | Fine: <span id="lunarEnd" class="lunar-time-highlight">--</span>
+                </div>
+            </div>
+
+            <div class="q2-dashboard">
+                <div class="info-col">
+                    <div class="info-label">Posizione</div>
+                    <div id="posVal" class="info-val" style="font-size:0.9em;">...</div>
+                </div>
+                <div class="compass-box">
+                    <canvas id="compassCanvas" width="120" height="120"></canvas>
+                    <div id="posAz" class="info-sub" style="margin-top:2px;">--&deg;</div>
+                </div>
+                <div class="info-col">
+                    <div class="info-label">Stato</div>
+                    <div id="visVal" class="info-val" style="font-size:0.9em;">...</div>
+                </div>
+            </div>
+            <div class="slider-box">
+                <div class="info-label" style="width:90px;">Ora (<span id="sliderLabel">Sol</span>):</div>
+                <input type="range" id="hourSlider" min="0" max="1440" step="1" value="720" style="width:100%;">
+                <div id="timeVal" class="info-val" style="width:50px; text-align:right;">12:00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls-bar">
+        
+        <div class="ctrl-column">
+            <span class="ctrl-title">Data & Modo</span>
+            
+            <a href="manuale_fasi_lunari.html" target="_blank" style="text-decoration: none; width: 100%;">
+                <button class="btn-help">?? Manuale d'Uso</button>
+            </a>
+            
+            <button class="btn-mode" onclick="toggleMode()" id="modeBtn">Passa a Giorno Lunare</button>
+            <div style="display:flex; gap:5px; align-items:center;">
+                <button class="btn-act" onclick="changeDay(-1)">-1</button>
+                <input type="date" id="dateInput">
+                <button class="btn-act" onclick="changeDay(1)">+1</button>
+            </div>
+        </div>
+
+        <div class="ctrl-column" style="justify-content:center;">
+            <button class="btn-play" id="playBtn" onclick="togglePlay()">PLAY</button>
+        </div>
+
+        <div class="ctrl-column">
+            <span class="ctrl-title">Fasi Principali</span>
+            <div class="phase-grid-layout">
+                <div class="phase-group">
+                    <button class="btn-jmp" onclick="jumpCycle(0, -1)">&lt;&lt;</button>
+                    <button class="btn-ph" onclick="setPhase(0)">Nuova</button>
+                    <button class="btn-jmp" onclick="jumpCycle(0, 1)">&gt;&gt;</button>
+                </div>
+                <div class="phase-group">
+                    <button class="btn-jmp" onclick="jumpCycle(0.5, -1)">&lt;&lt;</button>
+                    <button class="btn-ph" onclick="setPhase(0.5)">Piena</button>
+                    <button class="btn-jmp" onclick="jumpCycle(0.5, 1)">&gt;&gt;</button>
+                </div>
+                <div class="phase-group">
+                    <button class="btn-ph" style="width:100%" onclick="setPhase(0.25)">Primo Q.</button>
+                </div>
+                <div class="phase-group">
+                    <button class="btn-ph" style="width:100%" onclick="setPhase(0.75)">Ult. Q.</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="ctrl-column">
+            <span class="ctrl-title">Posizione</span>
+            <div class="coord-row">
+                <span class="coord-label">Lat</span>
+                <input type="range" id="latSlider" min="-90" max="90" value="42" style="width:90px; height:15px;">
+                <span id="latTxt" class="coord-val">42&deg;N</span>
+            </div>
+            <div class="coord-row">
+                <span class="coord-label">Lon</span>
+                <input type="range" id="lonSlider" min="-180" max="180" value="12" style="width:90px; height:15px;">
+                <span id="lonTxt" class="coord-val">12&deg;E</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const moonCtx = document.getElementById('moonCanvas').getContext('2d');
+    const skyCtx = document.getElementById('skyCanvas').getContext('2d');
+    const compassCtx = document.getElementById('compassCanvas').getContext('2d');
+    const els = {
+        dateDisplay: document.getElementById('fullDateDisplay'),
+        lunarDateDisplay: document.getElementById('lunarDateDisplay'),
+        phaseName: document.getElementById('phaseName'),
+        mnemoText: document.getElementById('mnemoText'),
+        ageVal: document.getElementById('ageVal'),
+        posAz: document.getElementById('posAz'),
+        posVal: document.getElementById('posVal'),
+        visVal: document.getElementById('visVal'),
+        timeVal: document.getElementById('timeVal'),
+        dateIn: document.getElementById('dateInput'),
+        hourSl: document.getElementById('hourSlider'),
+        latSl: document.getElementById('latSlider'),
+        lonSl: document.getElementById('lonSlider'),
+        latTxt: document.getElementById('latTxt'),
+        lonTxt: document.getElementById('lonTxt'),
+        playBtn: document.getElementById('playBtn'),
+        modeBtn: document.getElementById('modeBtn'),
+        q2ModeLabel: document.getElementById('q2ModeLabel'),
+        lunarInfoContent: document.getElementById('lunarInfoContent'),
+        lunarStart: document.getElementById('lunarStart'),
+        lunarEnd: document.getElementById('lunarEnd'),
+        sliderLabel: document.getElementById('sliderLabel'),
+        riseTime: document.getElementById('riseTime'),
+        riseDay: document.getElementById('riseDay'),
+        setTime: document.getElementById('setTime'),
+        setDay: document.getElementById('setDay'),
+        culmTime: document.getElementById('culmTime'), 
+        culmDay: document.getElementById('culmDay')
+    };
+
+    let state = { date: new Date(), hourMinutes: 720, memSolarSlider: 720, memLunarSlider: 720, lat: 42, lon: 12, playing: false, lunarMode: false, transitTime: 0 };
+    const RAD = Math.PI / 180;
+    const DEG = 180 / Math.PI;
+    const SYNODIC = 29.53058867;
+    const REF_NEW_MOON = new Date(2000, 0, 6, 18, 14, 0).getTime();
+    const CALENDAR_REF = new Date(2024, 0, 11, 11, 57).getTime();
+
+    function getMoonPos(timestamp, lat, lon) {
+        const jd = (timestamp / 86400000) + 2440587.5;
+        const d = jd - 2451545.0;
+        const L = (218.316 + 13.176396 * d) * RAD;
+        const M = (134.963 + 13.064993 * d) * RAD;
+        const F = (93.272 + 13.229350 * d) * RAD;
+        const lambda = L + 6.289 * RAD * Math.sin(M);
+        const beta = 5.128 * RAD * Math.sin(F);
+        const eps = (23.439 - 0.0000004 * d) * RAD;
+        const sinDec = Math.sin(beta) * Math.cos(eps) + Math.cos(beta) * Math.sin(eps) * Math.sin(lambda);
+        const dec = Math.asin(sinDec);
+        const y = Math.sin(lambda) * Math.cos(eps) - Math.tan(beta) * Math.sin(eps);
+        const x = Math.cos(lambda);
+        const ra = Math.atan2(y, x);
+        const GMST = (18.697374558 + 24.06570982441908 * d) % 24;
+        const LST_rad = (GMST + lon / 15) * 15 * RAD;
+        let H = LST_rad - ra;
+        const latRad = lat * RAD;
+        const sinAlt = Math.sin(latRad) * Math.sin(dec) + Math.cos(latRad) * Math.cos(dec) * Math.cos(H);
+        const alt = Math.asin(sinAlt);
+        const cosAz = (Math.sin(dec) - Math.sin(latRad) * Math.sin(alt)) / (Math.cos(latRad) * Math.cos(alt));
+        const sinAz = -Math.cos(dec) * Math.sin(H) / Math.cos(alt);
+        let az = Math.atan2(sinAz, cosAz);
+        if (az < 0) az += 2 * Math.PI;
+        return { az: az * DEG, alt: alt * DEG };
+    }
+
+    function getTransitTime(baseDate) {
+        const startTs = baseDate.getTime() - (state.lon/15 * 3600000); const endTs = startTs + 86400000; 
+        let bestTs = null; let minDiff = 360;
+        for(let t = startTs; t <= endTs; t += 600000) { 
+            let p = getMoonPos(t, state.lat, state.lon); let diff = Math.abs(p.az - 180);
+            if(diff < minDiff) { minDiff = diff; bestTs = t; }
+        }
+        if(minDiff > 5) {
+            let extStart = endTs; let extEnd = endTs + 86400000;
+            for(let t = extStart; t <= extEnd; t += 600000) {
+                let p = getMoonPos(t, state.lat, state.lon); let diff = Math.abs(p.az - 180);
+                if(diff < minDiff) { minDiff = diff; bestTs = t; }
+            }
+        }
+        return bestTs;
+    }
+
+    function calculateRiseSet(transitTs) {
+        const startScan = transitTs - 15 * 3600000; const endScan = transitTs + 15 * 3600000; const step = 5 * 60000;
+        let riseTs = null; let setTs = null; let prevAlt = -999;
+        for(let t = startScan; t < endScan; t += step) {
+            let pos = getMoonPos(t, state.lat, state.lon); let currAlt = pos.alt;
+            if (prevAlt !== -999) {
+                if (prevAlt < 0 && currAlt >= 0 && t < transitTs + 3600000) riseTs = t;
+                if (prevAlt > 0 && currAlt <= 0 && t > transitTs - 3600000) setTs = t;
+            }
+            prevAlt = currAlt;
+        }
+        return { rise: riseTs, set: setTs };
+    }
+
+    function formatEventTime(ts) {
+        if (!ts) return { time: "--:--", day: "--/--/--" };
+        let d = new Date(ts); d.setHours(d.getHours() + (state.lon/15));
+        let timeStr = `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`;
+        let day = String(d.getUTCDate()).padStart(2, '0'); let month = String(d.getUTCMonth() + 1).padStart(2, '0'); let year = String(d.getUTCFullYear()).slice(-2);
+        return { time: timeStr, day: `${day}/${month}/${year}` };
+    }
+
+    function formatFullDate(ts) {
+        let d = new Date(ts); d.setHours(d.getHours() + (state.lon/15)); 
+        return d.toUTCString().replace("GMT", "");
+    }
+
+    function getCurrentTimestamp() {
+        if (state.lunarMode) {
+            const offsetMinutes = state.hourMinutes - 720; return state.transitTime + (offsetMinutes * 60000);
+        } else {
+            let d = new Date(state.date); d.setHours(0, 0, 0, 0); return d.getTime() + (state.hourMinutes * 60000) - (state.lon/15 * 3600000);
+        }
+    }
+
+    function getPhaseData(date) {
+        let diff = date.getTime() - REF_NEW_MOON; let days = diff / 86400000;
+        let age = days % SYNODIC; if(age < 0) age += SYNODIC;
+        let phase01 = age / SYNODIC;
+        let angle = phase01 * 2 * Math.PI;
+        let illum = 0.5 * (1 - Math.cos(angle));
+        return { age, phase01, illum, isWaxing: phase01 < 0.5 };
+    }
+
+    function getLunarCalendarDate(date) {
+        let diff = date.getTime() - CALENDAR_REF;
+        let totalDays = Math.floor(diff / 86400000);
+        if (totalDays < 0) totalDays += (354 * 100); 
+        let lunarYear = Math.floor(totalDays / 354.367) + 1;
+        let dayOfYear = totalDays % 354.367;
+        let lunarMonth = Math.floor(dayOfYear / 29.5306) + 1;
+        let lunarDay = Math.floor(dayOfYear % 29.5306) + 1;
+        return `Anno Lunare ${lunarYear} - Mese ${lunarMonth} - Giorno ${lunarDay}`;
+    }
+
+    function drawQ1(data) {
+        const w = moonCanvas.width; const r = w * 0.45;
+        moonCtx.clearRect(0,0,w,w); moonCtx.save(); moonCtx.translate(w/2, w/2);
+        if(state.lat < 0) moonCtx.rotate(Math.PI); moonCtx.rotate(-0.3);
+        moonCtx.beginPath(); moonCtx.arc(0,0,r,0,Math.PI*2); moonCtx.fillStyle="#151520"; moonCtx.fill();
+        if(data.illum > 0.01) {
+            moonCtx.fillStyle = "#fffce6"; moonCtx.beginPath();
+            if(data.isWaxing) moonCtx.arc(0,0,r,-Math.PI/2, Math.PI/2); else moonCtx.arc(0,0,r,Math.PI/2, Math.PI*1.5);
+            moonCtx.fill();
+            let wFact = Math.cos(data.phase01 * 2 * Math.PI); moonCtx.save(); moonCtx.scale(Math.abs(wFact), 1);
+            moonCtx.beginPath(); moonCtx.arc(0,0,r,0,Math.PI*2);
+            moonCtx.fillStyle = data.illum > 0.5 ? "#fffce6" : "#151520";
+            moonCtx.fill(); moonCtx.restore();
+        }
+        moonCtx.restore();
+    }
+
+    function drawCompass(azimuthDeg) {
+        const w = compassCanvas.width; const cx = w/2, cy = w/2, r = w/2 - 4;
+        compassCtx.clearRect(0,0,w,w);
+        compassCtx.beginPath(); compassCtx.arc(cx,cy,r,0,Math.PI*2); 
+        compassCtx.fillStyle="#1a1a20"; compassCtx.fill(); compassCtx.strokeStyle="#444"; compassCtx.lineWidth=3; compassCtx.stroke();
+        compassCtx.font = "bold 20px Arial"; compassCtx.textAlign="center"; compassCtx.textBaseline="middle"; compassCtx.fillStyle = "#888";
+        compassCtx.fillText("S", cx, cy - r + 15); compassCtx.fillText("N", cx, cy + r - 15);
+        compassCtx.fillText("W", cx + r - 15, cy); compassCtx.fillText("E", cx - r + 15, cy);
+        const angle = (azimuthDeg - 270) * RAD;
+        compassCtx.beginPath(); compassCtx.moveTo(cx, cy); compassCtx.lineTo(cx + Math.cos(angle)*(r-10), cy + Math.sin(angle)*(r-10));
+        compassCtx.strokeStyle = "#FF3333"; compassCtx.lineWidth=4; compassCtx.stroke();
+        compassCtx.beginPath(); compassCtx.arc(cx,cy,5,0,Math.PI*2); compassCtx.fillStyle="#FF3333"; compassCtx.fill();
+    }
+
+    function drawQ2() {
+        const w = skyCanvas.width; const h = skyCanvas.height;
+        const bottom = h - 40; const leftMargin = 40; const plotW = w - leftMargin; const plotH = bottom; 
+        skyCtx.fillStyle = "#111"; skyCtx.fillRect(0,0,w,h);
+        
+        skyCtx.strokeStyle = "#333"; skyCtx.lineWidth = 2; skyCtx.setLineDash([8, 8]); 
+        [30, 60, 90].forEach(alt => {
+            let y = bottom - (alt / 90) * (plotH - 20); 
+            skyCtx.beginPath(); skyCtx.moveTo(leftMargin, y); skyCtx.lineTo(w, y); skyCtx.stroke();
+            skyCtx.fillStyle = "#666"; skyCtx.textAlign = "right"; skyCtx.font = "20px Arial"; skyCtx.fillText(alt + "°", leftMargin - 10, y + 6);
+        });
+        skyCtx.setLineDash([]); 
+        skyCtx.beginPath(); skyCtx.moveTo(leftMargin, bottom); skyCtx.lineTo(w, bottom); skyCtx.strokeStyle = "#4facfe"; skyCtx.lineWidth = 3; skyCtx.stroke();
+        const labels = ["N", "E", "S", "W", "N"]; skyCtx.textAlign = "center"; skyCtx.font = "20px Arial";
+        if(state.lunarMode) {
+            skyCtx.fillStyle = "#FFD700"; 
+            for(let i=0; i<=4; i++) {
+                let x = leftMargin + (i/4) * plotW;
+                skyCtx.beginPath(); skyCtx.moveTo(x, bottom); skyCtx.lineTo(x, bottom + 10); skyCtx.stroke();
+                let offsetMs = (i - 2) * 6 * 3600000; let t = new Date(state.transitTime + offsetMs); t.setHours(t.getHours() + (state.lon/15));
+                let hStr = String(t.getUTCHours()).padStart(2,'0') + ":00"; skyCtx.fillText(hStr, x, h-10);
+            }
+        } else {
+            skyCtx.fillStyle = "#888"; 
+            for(let i=0; i<=4; i++) {
+                let x = leftMargin + (i/4) * plotW;
+                skyCtx.beginPath(); skyCtx.moveTo(x, 0); skyCtx.lineTo(x, bottom); skyCtx.strokeStyle = "#222"; skyCtx.stroke();
+                skyCtx.fillText(labels[i], x, h-10);
+            }
+        }
+        let startTs, endTs;
+        if(state.lunarMode) { startTs = state.transitTime - (12 * 3600000); endTs = state.transitTime + (12 * 3600000); } 
+        else {
+            const startOfDay = new Date(state.date); startOfDay.setHours(0,0,0,0);
+            let baseTs = startOfDay.getTime() - (state.lon/15 * 3600000); 
+            let pEnd = getMoonPos(baseTs + 86400000, state.lat, state.lon);
+            let extraEnd = (pEnd.alt > 0) ? 12 * 3600000 : 0;
+            startTs = baseTs; endTs = baseTs + 86400000 + extraEnd;
+        }
+        const step = 240000; const steps = (endTs - startTs) / step;
+        let points = [];
+        for(let i = 0; i <= steps; i++) {
+            let t = startTs + (i * step); let p = getMoonPos(t, state.lat, state.lon);
+            let x = state.lunarMode ? leftMargin + (i/steps)*plotW : leftMargin + (p.az/360)*plotW;
+            let y = bottom - (p.alt / 90) * (plotH - 20);
+            points.push({x: x, y: y, alt: p.alt});
+        }
+        skyCtx.lineWidth = 4; skyCtx.strokeStyle = "#333";
+        let isDrawing = false;
+        for(let i=0; i<points.length; i++) {
+            let p = points[i];
+            let jump = !state.lunarMode && (i > 0 && Math.abs(p.x - points[i-1].x) > plotW/2);
+            if(jump) { skyCtx.stroke(); skyCtx.beginPath(); skyCtx.moveTo(p.x, p.y); } 
+            else { if(!isDrawing) { skyCtx.moveTo(p.x, p.y); isDrawing=true; } else { skyCtx.lineTo(p.x, p.y); } }
+        }
+        skyCtx.stroke();
+        skyCtx.beginPath(); skyCtx.strokeStyle = "#FFD700"; isDrawing = false;
+        for(let i=0; i<points.length; i++) {
+            let p = points[i];
+            let jump = !state.lunarMode && (i > 0 && Math.abs(p.x - points[i-1].x) > plotW/2);
+            if(jump) { skyCtx.stroke(); skyCtx.beginPath(); isDrawing=false; }
+            if(p.alt > 0) {
+                if(i > 0 && points[i-1].alt <= 0) { skyCtx.moveTo(p.x, p.y); isDrawing = true; } 
+                else if(!isDrawing) { skyCtx.moveTo(p.x, p.y); isDrawing = true; } 
+                else { skyCtx.lineTo(p.x, p.y); }
+            } else if(isDrawing) { skyCtx.stroke(); skyCtx.beginPath(); isDrawing = false; }
+        }
+        skyCtx.stroke();
+        const currentTs = getCurrentTimestamp();
+        let nowPos = getMoonPos(currentTs, state.lat, state.lon);
+        drawCompass(nowPos.az);
+        let curX, curY;
+        if(state.lunarMode) { let progress = (currentTs - startTs) / (endTs - startTs); curX = leftMargin + progress * plotW; } 
+        else { curX = leftMargin + (nowPos.az / 360) * plotW; }
+        curY = bottom - (nowPos.alt / 90) * (plotH - 20);
+        let isBelow = nowPos.alt < 0; if(isBelow) curY = bottom; 
+        if(curX >= leftMargin && curX <= w) { 
+            skyCtx.beginPath(); skyCtx.arc(curX, curY, 8, 0, Math.PI*2); 
+            if(isBelow) { skyCtx.fillStyle = "transparent"; skyCtx.strokeStyle = "#555"; skyCtx.lineWidth = 2; skyCtx.stroke(); } 
+            else { skyCtx.fillStyle = "red"; skyCtx.fill(); skyCtx.strokeStyle = "white"; skyCtx.lineWidth = 2; skyCtx.stroke(); }
+            if(!isBelow) { 
+                let d = new Date(currentTs); d.setHours(d.getHours() + (state.lon/15)); 
+                let timeStr = `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`;
+                skyCtx.fillStyle = "#FFD700"; skyCtx.font = "bold 24px Arial"; skyCtx.textAlign = "center";
+                skyCtx.fillText(timeStr, curX, curY - 20);
+            }
+        }
+        els.posAz.innerText = `${Math.round(nowPos.az)}°`; 
+        els.posVal.innerHTML = `Az: ${Math.round(nowPos.az)}&deg; <br> Alt: ${Math.round(nowPos.alt)}&deg;`;
+        els.visVal.innerText = nowPos.alt > 0 ? "Visibile" : "Sotto Orizzonte";
+        els.visVal.style.color = nowPos.alt > 0 ? "#4CAF50" : "#f44336";
+    }
+
+    function update() {
+        let baseDate = new Date(state.date); baseDate.setHours(0,0,0,0);
+        let baseTs = baseDate.getTime() - (state.lon/15 * 3600000);
+        state.transitTime = getTransitTime(new Date(baseTs));
+        let rs = calculateRiseSet(state.transitTime);
+        let rData = formatEventTime(rs.rise); let sData = formatEventTime(rs.set); let cData = formatEventTime(state.transitTime);
+        els.riseTime.innerText = rData.time; els.riseDay.innerText = rData.day;
+        els.setTime.innerText = sData.time; els.setDay.innerText = sData.day;
+        els.culmTime.innerText = cData.time; els.culmDay.innerText = cData.day;
+        els.dateIn.value = state.date.toISOString().slice(0, 10);
+        const opts = { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' };
+        els.dateDisplay.innerText = state.date.toLocaleDateString('it-IT', opts);
+        els.lunarDateDisplay.innerText = getLunarCalendarDate(state.date);
+        
+        if(state.lunarMode) {
+            els.lunarInfoContent.style.visibility = "visible";
+            els.sliderLabel.innerText = "Giorno Lunare";
+            els.lunarStart.innerText = formatFullDate(state.transitTime - 12*3600000);
+            els.lunarEnd.innerText = formatFullDate(state.transitTime + 12*3600000);
+        } else {
+            els.lunarInfoContent.style.visibility = "hidden";
+            els.sliderLabel.innerText = "Ora Solare (00-24)";
+        }
+        
+        let curTs = getCurrentTimestamp();
+        let dObj = new Date(curTs); dObj.setHours(dObj.getHours() + (state.lon/15));
+        let h = dObj.getUTCHours(); let m = dObj.getUTCMinutes();
+        els.timeVal.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        let pData = getPhaseData(state.date); drawQ1(pData);
+        
+        let pName = "Fase Intermedia";
+        if(pData.illum < 0.02) pName = "Nuova";
+        else if(pData.illum > 0.98) pName = "Piena";
+        else {
+            let p = pData.phase01;
+            if(p >= 0.21 && p <= 0.29) pName = "Primo Quarto";
+            else if(p >= 0.71 && p <= 0.79) pName = "Ultimo Quarto";
+            else if(p < 0.21) pName = "Falce Crescente";
+            else if(p < 0.5) pName = "Gibbosa Crescente";
+            else if(p < 0.71) pName = "Gibbosa Calante";
+            else pName = "Falce Calante";
+        }
+        els.phaseName.innerText = pName;
+        els.ageVal.innerText = pData.age.toFixed(1) + " gg";
+        els.mnemoText.innerText = pData.isWaxing ? "Gobba a Ponente, Luna Crescente" : "Gobba a Levante, Luna Calante";
+        drawQ2();
+    }
+
+    window.toggleMode = () => {
+        state.lunarMode = !state.lunarMode;
+        els.modeBtn.innerText = state.lunarMode ? "Passa a Giorno Solare" : "Passa a Giorno Lunare";
+        els.q2ModeLabel.innerText = state.lunarMode ? "(Giorno Lunare)" : "(Solare)";
+        state.hourMinutes = state.lunarMode ? state.memLunarSlider : state.memSolarSlider;
+        els.hourSl.value = state.hourMinutes;
+        update();
+    }
+    els.hourSl.addEventListener('input', (e) => { 
+        let val = parseInt(e.target.value); state.hourMinutes = val;
+        if(state.lunarMode) state.memLunarSlider = val; else state.memSolarSlider = val;
+        update(); 
+    });
+    window.changeDay = (d) => { 
+        if(state.lunarMode) state.date.setTime(state.date.getTime() + (d * 1.035 * 86400000));
+        else state.date.setDate(state.date.getDate() + d); 
+        update(); 
+    };
+    window.setPhase = (target) => {
+        let cur = getPhaseData(state.date).phase01; let delta = target - cur;
+        if(delta < 0) delta += 1; state.date.setTime(state.date.getTime() + delta * SYNODIC * 86400000); update();
+    }
+    window.jumpCycle = (targetPhase, direction) => {
+        let curData = getPhaseData(state.date); let dist = Math.abs(curData.phase01 - targetPhase);
+        if(dist > 0.05) {
+            let delta = targetPhase - curData.phase01; if(delta < -0.5) delta += 1; if(delta > 0.5) delta -= 1;
+            state.date.setTime(state.date.getTime() + delta * SYNODIC * 86400000);
+        }
+        state.date.setTime(state.date.getTime() + (SYNODIC * 86400000 * direction)); update();
+    }
+    
+    els.dateIn.addEventListener('change', (e) => { state.date = new Date(e.target.value); update(); });
+    els.latSl.addEventListener('input', (e) => { state.lat = parseFloat(e.target.value); els.latTxt.innerHTML = Math.abs(state.lat)+"&deg; "+(state.lat>=0?"N":"S"); update(); });
+    els.lonSl.addEventListener('input', (e) => { state.lon = parseFloat(e.target.value); els.lonTxt.innerHTML = Math.abs(state.lon)+"&deg; "+(state.lon>=0?"E":"W"); update(); });
+
+    let animId;
+    window.togglePlay = () => {
+        if(state.playing) { state.playing = false; els.playBtn.innerText = "PLAY"; cancelAnimationFrame(animId); } 
+        else { state.playing = true; els.playBtn.innerText = "STOP"; loop(); }
+    };
+    function loop() {
+        if(!state.playing) return;
+        state.hourMinutes += 10; 
+        if(state.hourMinutes >= 1440) { state.hourMinutes = 0; state.date.setDate(state.date.getDate() + 1); }
+        els.hourSl.value = state.hourMinutes; 
+        if(state.lunarMode) state.memLunarSlider = state.hourMinutes; else state.memSolarSlider = state.hourMinutes;
+        update(); animId = requestAnimationFrame(loop);
+    }
+    update();
+</script>
+</body>
+</html>
