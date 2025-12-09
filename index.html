@@ -1,73 +1,414 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <title>Home – Utility Astronomiche</title>
+  <meta charset="UTF-8" />
+  <title>Utility Astronomiche – Analemma & Fasi Lunari</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    :root {
+      --bg-main: #050712;
+      --bg-card: #111623;
+      --bg-card-soft: #171d2b;
+      --accent: #ffd700;
+      --accent-soft: #4facfe;
+      --text-main: #f3f3f3;
+      --text-muted: #a0a4b8;
+      --border-soft: #252b3a;
+      --shadow-soft: 0 12px 25px rgba(0,0,0,0.5);
+      --radius-card: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      background: #f5f5f5;
     }
-    header {
-      background: #003366;
-      color: white;
-      padding: 1rem;
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, sans-serif;
+      background: radial-gradient(circle at top, #151c34 0%, #050712 55%, #020307 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px 12px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* HEADER */
+
+    .hero {
+      background: linear-gradient(135deg, rgba(15, 32, 64, 0.95), rgba(12, 16, 32, 0.97));
+      border-radius: 18px;
+      padding: 20px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(79,172,254,0.18) 0, transparent 45%),
+        radial-gradient(circle at 80% 10%, rgba(255,215,0,0.18) 0, transparent 45%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .hero-left,
+    .hero-right {
+      position: relative; /* per stare sopra il ::before */
+      z-index: 1;
+    }
+
+    .hero-left {
+      max-width: 650px;
+    }
+
+    .hero-title {
+      font-size: clamp(1.7rem, 2vw + 1rem, 2.1rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .hero-title span {
+      color: var(--accent);
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .hero-tagline {
+      font-size: 0.9rem;
+      color: var(--accent-soft);
+      font-style: italic;
+    }
+
+    .hero-right {
+      min-width: 210px;
+      background: rgba(5,7,18,0.8);
+      border-radius: 14px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .hero-right h2 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 6px;
       text-align: center;
     }
-    main {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 1.5rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    .hero-list {
+      list-style: none;
+      display: grid;
+      gap: 4px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
     }
-    h1 {
-      margin-top: 0;
+
+    .hero-list li::before {
+      content: "• ";
+      color: var(--accent-soft);
     }
-    a {
-      color: #003366;
+
+    /* SEZIONE CARD */
+
+    .section-title {
+      margin: 16px 4px 10px 4px;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .section-subtitle {
+      margin: 0 4px 14px 4px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border-soft);
+      padding: 14px 14px 16px 14px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      color: var(--accent);
+    }
+
+    .card-emoji {
+      font-size: 1.2rem;
+    }
+
+    .card-body {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .card-meta {
+      font-size: 0.78rem;
+      color: #7f86a2;
+      margin-top: 4px;
+    }
+
+    .card-actions {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-main,
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
       text-decoration: none;
-      font-weight: bold;
+      border: none;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
     }
-    a:hover {
-      text-decoration: underline;
+
+    .btn-main {
+      background: linear-gradient(135deg, #ffd700, #ffb300);
+      color: #151515;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.45);
     }
+
+    .btn-main:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 9px 16px rgba(0,0,0,0.55);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.25);
+      color: var(--accent-soft);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(31, 41, 71, 0.85);
+      transform: translateY(-1px);
+    }
+
+    .btn-icon {
+      font-size: 1rem;
+    }
+
+    /* FOOTER LEGGERO */
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #6c7390;
+    }
+
+    .footer span {
+      color: var(--accent-soft);
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding: 16px;
+      }
+      .hero-right {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 <body>
-  <header>
-    <h1>Utility Astronomiche</h1>
-  </header>
+  <div class="page">
 
-  <main>
-    <h2>Benvenuto</h2>
-    <p>
-      Questa è la pagina Home delle mie piccole applicazioni di astronomia.
-    </p>
-    <p>
-      Per iniziare, puoi scegliere una delle seguenti utility:
-    </p>
+    <!-- HEADER -->
+    <header class="hero">
+      <div class="hero-left">
+        <div class="hero-title">
+          Utility <span>Astronomiche</span>
+        </div>
+        <p class="hero-subtitle">
+          Una piccola raccolta di strumenti interattivi per esplorare i moti della Terra
+          e della Luna: osserva l’analemma, segui la fase lunare, visualizza il percorso
+          nel cielo per una data e una posizione scelta.
+        </p>
+        <p class="hero-tagline">
+          Pensato per curiosi, studenti e appassionati di astronomia che vogliono “vedere” i calcoli.
+        </p>
+      </div>
 
-    <ul>
-      <li>
-        <a href="analemma_simulatore_moti_Terra_Sole.html">
-          Vai all'utility "Analemma"
-        </a>
-      </li>
-      <li>
-        <a href="fasi_lunari.html">
-          Vai all'utility "Fasi lunari"
-        </a>
-      </li>
-      <li>
-        <a href="manuale_fasi_lunari.html">
-          Vai all'utility "Manuale fasi lunari"
-        </a>
-      </li>
-    </ul>
-  </main>
+      <aside class="hero-right">
+        <h2>Cosa puoi fare qui</h2>
+        <ul class="hero-list">
+          <li>Simulare l’<strong>analemma</strong> e il moto apparente del Sole.</li>
+          <li>Visualizzare <strong>fase</strong> e <strong>percorso</strong> della Luna nel cielo.</li>
+          <li>Sperimentare con <strong>latitudine</strong>, <strong>data</strong> e <strong>ora</strong>.</li>
+        </ul>
+      </aside>
+    </header>
+
+    <!-- SEZIONE CARD -->
+    <main>
+      <h2 class="section-title">Scegli un’utility</h2>
+      <p class="section-subtitle">
+        Clicca su uno dei moduli qui sotto per aprire il relativo simulatore.  
+        Puoi sempre tornare a questa pagina tramite il link “Torna alla Home”.
+      </p>
+
+      <div class="cards-grid">
+
+        <!-- CARD ANALLEMMA -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-emoji">☀️</span>
+              <span>Analemma – Simulatore Terra–Sole</span>
+            </div>
+            <span class="card-badge">Sole</span>
+          </div>
+          <div class="card-body">
+            Visualizza la caratteristica “8” dell’analemma e osserva come variano
+            la declinazione solare e l’altezza del Sole nel corso dell’anno, in funzione
+            della latitudine scelta.
+            <div class="card-meta">
+              Utile per capire solstizi, equinozi e l’equazione del tempo.
+            </div>
+          </div>
+          <div class="card-actions">
+            <a href="analemma_simulatore_moti_Terra_Sole.html" class="btn-main">
+              <span class="btn-icon">▶</span>
+              Apri simulatore Analemma
+            </a>
+          </div>
+        </article>
+
+        <!-- CARD FASI LUNARI -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-emoji">🌙</span>
+              <span>Cruscotto Lunare</span>
+            </div>
+            <span class="card-badge">Luna</span>
+          </div>
+          <div class="card-body">
+            Mostra la fase lunare attuale, l’età della Luna, il suo percorso nel cielo,
+            gli orari di sorgere, culminazione e tramonto, con vista anche in modalità
+            “giorno lunare”.
+            <div class="card-meta">
+              Include bussola, grafico altitudine/azimut e controlli per data e posizione.
+            </div>
+          </div>
+          <div class="card-actions">
+            <a href="fasi_lunari.html" class="btn-main">
+              <span class="btn-icon">▶</span>
+              Apri Cruscotto Lunare
+            </a>
+            <a href="manuale_fasi_lunari.html" class="btn-ghost" target="_blank">
+              <span class="btn-icon">📖</span>
+              Manuale d’uso
+            </a>
+          </div>
+        </article>
+
+        <!-- CARD MANUALE GENERALE (OPZIONALE) -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-emoji">🛈</span>
+              <span>Note e indicazioni</span>
+            </div>
+            <span class="card-badge">Info</span>
+          </div>
+          <div class="card-body">
+            Alcune considerazioni e limiti: si tratta di simulatori semplificati
+            pensati per uso didattico. Gli orari e le posizioni sono approssimati
+            e non sostituiscono software astronomici professionali.
+            <div class="card-meta">
+              Ideale per esperimenti concettuali, verifiche in classe e uso personale.
+            </div>
+          </div>
+          <div class="card-actions">
+            <a href="manuale_fasi_lunari.html" class="btn-ghost" target="_blank">
+              <span class="btn-icon">📖</span>
+              Manuale Cruscotto Lunare
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>Utility Astronomiche</span> – raccolta privata di strumenti sperimentali per lo studio dei moti
+      di Sole e Luna.
+    </footer>
+
+  </div>
 </body>
 </html>
