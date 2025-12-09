@@ -152,7 +152,14 @@
         <h1>Cruscotto Lunare</h1>
         <div id="fullDateDisplay" class="date-main">...</div>
         <div id="lunarDateDisplay" class="date-sub">...</div>
+
+        <div style="margin-top: 4px; text-align: center;">
+            <a href="index.html" style="color:#FFD700; text-decoration:none; font-weight:bold;">
+                ← Torna alla Home
+            </a>
+        </div>
     </div>
+
 
     <div class="top-row">
         
@@ -227,7 +234,7 @@
             <span class="ctrl-title">Data & Modo</span>
             
             <a href="manuale_fasi_lunari.html" target="_blank" style="text-decoration: none; width: 100%;">
-                <button class="btn-help">?? Manuale d'Uso</button>
+                <button class="btn-help">📖 Manuale d'Uso</button>
             </a>
             
             <button class="btn-mode" onclick="toggleMode()" id="modeBtn">Passa a Giorno Lunare</button>
@@ -462,7 +469,7 @@
         [30, 60, 90].forEach(alt => {
             let y = bottom - (alt / 90) * (plotH - 20); 
             skyCtx.beginPath(); skyCtx.moveTo(leftMargin, y); skyCtx.lineTo(w, y); skyCtx.stroke();
-            skyCtx.fillStyle = "#666"; skyCtx.textAlign = "right"; skyCtx.font = "20px Arial"; skyCtx.fillText(alt + "�", leftMargin - 10, y + 6);
+            skyCtx.fillStyle = "#666"; skyCtx.textAlign = "right"; skyCtx.font = "20px Arial"; skyCtx.fillText(alt + "°", leftMargin - 10, y + 6);
         });
         skyCtx.setLineDash([]); 
         skyCtx.beginPath(); skyCtx.moveTo(leftMargin, bottom); skyCtx.lineTo(w, bottom); skyCtx.strokeStyle = "#4facfe"; skyCtx.lineWidth = 3; skyCtx.stroke();
@@ -540,7 +547,7 @@
                 skyCtx.fillText(timeStr, curX, curY - 20);
             }
         }
-        els.posAz.innerText = `${Math.round(nowPos.az)}�`; 
+        els.posAz.innerText = `${Math.round(nowPos.az)}°`; 
         els.posVal.innerHTML = `Az: ${Math.round(nowPos.az)}&deg; <br> Alt: ${Math.round(nowPos.alt)}&deg;`;
         els.visVal.innerText = nowPos.alt > 0 ? "Visibile" : "Sotto Orizzonte";
         els.visVal.style.color = nowPos.alt > 0 ? "#4CAF50" : "#f44336";
