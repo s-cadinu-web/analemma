@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -117,24 +118,37 @@
 
     <h1>Manuale d'Uso: Cruscotto Lunare Integrato</h1>
     
-    <p>Benvenuto nel <strong>Simulatore Astronomico Lunare</strong>. Questo strumento Ë stato progettato per visualizzare in tempo reale la fase, la posizione e il movimento della Luna nel cielo, permettendoti di comprendere le dinamiche celesti sia dal punto di vista "visivo" che "scientifico".</p>
+    <div style="text-align:center; margin: 6px 0 18px 0;">
+        <a href="fasi_lunari.html" style="color:#FFD700; font-weight:bold; text-decoration:none; margin-right:15px;">
+            ‚Üê Torna al Cruscotto Lunare
+        </a>
+        |
+        <a href="index.html" style="color:#FFD700; font-weight:bold; text-decoration:none; margin-left:15px;">
+            ‚Üê Torna alla Home
+        </a>
+    </div>
+    
+    <p>Benvenuto nel <strong>Simulatore Astronomico Lunare</strong>...
+
+    
+    <p>Benvenuto nel <strong>Simulatore Astronomico Lunare</strong>. Questo strumento √® stato progettato per visualizzare in tempo reale la fase, la posizione e il movimento della Luna nel cielo, permettendoti di comprendere le dinamiche celesti sia dal punto di vista "visivo" che "scientifico".</p>
 
     <div class="highlight-box">
-        <strong>?? Guida Rapida:</strong> Imposta la tua data e posizione geografica usando i controlli in basso, poi premi <span class="btn-example" style="background:#f44336;">PLAY</span> per vedere l'animazione del movimento lunare.
+        <strong>üöÄ Guida Rapida:</strong> Imposta la tua data e posizione geografica usando i controlli in basso, poi premi <span class="btn-example" style="background:#f44336;">PLAY</span> per vedere l'animazione del movimento lunare.
     </div>
 
     <h2>1. Panoramica dell'Interfaccia</h2>
-    <p>Il cruscotto Ë diviso in due aree principali (Q1 e Q2) e una barra dei comandi inferiore.</p>
+    <p>Il cruscotto √® diviso in due aree principali (Q1 e Q2) e una barra dei comandi inferiore.</p>
 
     <div class="grid-explanation">
         <div>
             <h3>Q1. Fase Lunare (Sinistra)</h3>
             <p>Questo pannello mostra l'aspetto "fisico" della Luna come apparirebbe vista attraverso un telescopio.</p>
             <ul>
-                <li><strong>L'Immagine:</strong> Mostra la parte illuminata dal Sole. L'ombra (il terminatore) Ë calcolata geometricamente.</li>
+                <li><strong>L'Immagine:</strong> Mostra la parte illuminata dal Sole. L'ombra (il terminatore) √® calcolata geometricamente.</li>
                 <li><strong>Fase:</strong> Il nome astronomico della fase corrente (es. <em>Gibbosa Crescente</em>).</li>
                 <li><strong>Regola Mnemonica:</strong> Appare una frase in corsivo ("Gobba a ponente...") per aiutarti a riconoscere se la luna cresce o cala.</li>
-                <li><strong>Et‡ (Age):</strong> I giorni trascorsi dall'ultima Luna Nuova (0.0 = Nuova, 14.8 = Piena, 29.5 = Fine Ciclo).</li>
+                <li><strong>Et√† (Age):</strong> I giorni trascorsi dall'ultima Luna Nuova (0.0 = Nuova, 14.8 = Piena, 29.5 = Fine Ciclo).</li>
             </ul>
         </div>
         <div>
@@ -142,7 +156,7 @@
             <p>Questo grafico cartesiano rappresenta la volta celeste vista dall'osservatore.</p>
             <ul>
                 <li><strong>Asse Orizzontale (X):</strong> I punti cardinali (Nord, Est, Sud, Ovest).</li>
-                <li><strong>Asse Verticale (Y):</strong> L'altezza in gradi (0∞ = Orizzonte, 90∞ = Zenit).</li>
+                <li><strong>Asse Verticale (Y):</strong> L'altezza in gradi (0¬∞ = Orizzonte, 90¬∞ = Zenit).</li>
                 <li><strong>Linea Gialla:</strong> La traiettoria che la Luna percorre durante la giornata.</li>
                 <li><strong>Pallino Rosso:</strong> La posizione esatta della Luna nell'ora selezionata.</li>
                 <li><strong>Bussola:</strong> Un piccolo radar che indica la direzione in cui guardare.</li>
@@ -150,17 +164,17 @@
         </div>
     </div>
 
-    <h2>2. Le Modalit‡ di Visualizzazione</h2>
-    <p>» possibile cambiare il sistema di riferimento temporale cliccando sul pulsante arancione <span class="btn-example" style="background: linear-gradient(90deg, #ff9800, #ff5722);">Passa a...</span>.</p>
+    <h2>2. Le Modalit√† di Visualizzazione</h2>
+    <p>√à possibile cambiare il sistema di riferimento temporale cliccando sul pulsante arancione <span class="btn-example" style="background: linear-gradient(90deg, #ff9800, #ff5722);">Passa a...</span>.</p>
 
-    <h3>?? Modo Giorno Solare (Default)</h3>
+    <h3>‚òÄÔ∏è Modo Giorno Solare (Default)</h3>
     <p>Il grafico mostra il cielo dalle ore <strong>00:00 alle 24:00</strong> del nostro orologio civile.</p>
     <ul>
-        <li>Utile per rispondere a domande come: <em>"Dove sar‡ la luna stasera a cena?"</em>.</li>
+        <li>Utile per rispondere a domande come: <em>"Dove sar√† la luna stasera a cena?"</em>.</li>
         <li>Se mandi avanti i giorni, vedrai la parabola della Luna spostarsi verso destra (la Luna ritarda di circa 50 minuti ogni giorno).</li>
     </ul>
 
-    <h3>?? Modo Giorno Lunare</h3>
+    <h3>üåô Modo Giorno Lunare</h3>
     <p>Il grafico si "centra" sulla Luna. L'asse temporale si adatta per mostrare l'intero passaggio della Luna (dal sorgere al tramonto), anche se questo avviene a cavallo tra due giorni diversi.</p>
     <ul>
         <li>Utile per studiare la durata del fenomeno senza interruzioni grafiche a mezzanotte.</li>
@@ -170,32 +184,32 @@
     <h2>3. I Dati Astronomici</h2>
     <p>Sotto il grafico del cielo (Q2), trovi tre riquadri fondamentali:</p>
     <ul>
-        <li><strong>Sorge ?:</strong> L'ora e la data in cui la Luna spunta dall'orizzonte Est.</li>
-        <li><strong>Culmine ?:</strong> L'ora e la data in cui la Luna raggiunge il punto pi˘ alto (Meridiano Sud).</li>
-        <li><strong>Tramonta ?:</strong> L'ora e la data in cui la Luna scende sotto l'orizzonte Ovest.</li>
+        <li><strong>Sorge ‚Üó:</strong> L'ora e la data in cui la Luna spunta dall'orizzonte Est.</li>
+        <li><strong>Culmine ‚Üì:</strong> L'ora e la data in cui la Luna raggiunge il punto pi√π alto (Meridiano Sud).</li>
+        <li><strong>Tramonta ‚Üò:</strong> L'ora e la data in cui la Luna scende sotto l'orizzonte Ovest.</li>
     </ul>
 
     <h2>4. Pannello di Controllo</h2>
     <p>La barra inferiore ti permette di navigare nel tempo e nello spazio.</p>
 
-    <h3>?? Data e Navigazione</h3>
+    <h3>üìÖ Data e Navigazione</h3>
     <ul>
         <li><strong>Calendario:</strong> Clicca sulla data per sceglierne una specifica.</li>
-        <li><strong>-1 / +1:</strong> Sposta la simulazione avanti o indietro di un giorno solare (o lunare, a seconda della modalit‡).</li>
+        <li><strong>-1 / +1:</strong> Sposta la simulazione avanti o indietro di un giorno solare (o lunare, a seconda della modalit√†).</li>
         <li><strong>PLAY / STOP:</strong> Avvia un'animazione automatica per vedere il mutare delle fasi in accelerata.</li>
     </ul>
 
-    <h3>?? Navigazione per Fasi</h3>
-    <p>Questa griglia di pulsanti Ë molto potente per saltare nel tempo:</p>
+    <h3>üåë Navigazione per Fasi</h3>
+    <p>Questa griglia di pulsanti √® molto potente per saltare nel tempo:</p>
     <ul>
-        <li><strong>Pulsanti Centrali (es. "Piena"):</strong> Portano alla prossima Luna Piena (o Nuova, etc.) pi˘ vicina alla data attuale.</li>
+        <li><strong>Pulsanti Centrali (es. "Piena"):</strong> Portano alla prossima Luna Piena (o Nuova, etc.) pi√π vicina alla data attuale.</li>
         <li><strong>Frecce << e >>:</strong> Permettono di saltare esattamente di un mese lunare indietro o avanti, mantenendo la stessa fase (es. vedere la Luna Piena di ogni mese dell'anno).</li>
     </ul>
 
-    <h3>?? Posizione (Coordinate)</h3>
+    <h3>üåç Posizione (Coordinate)</h3>
     <ul>
         <li><strong>Latitudine (Lat):</strong> Spostando questo slider simuli un osservatore che viaggia dal Polo Nord all'Equatore al Polo Sud.
-            <br><em>Nota: Se vai nell'emisfero Sud (valori negativi), vedrai la Luna nel quadro Q1 capovolgersi, come accade nella realt‡!</em></li>
+            <br><em>Nota: Se vai nell'emisfero Sud (valori negativi), vedrai la Luna nel quadro Q1 capovolgersi, come accade nella realt√†!</em></li>
         <li><strong>Longitudine (Lon):</strong> Aggiusta l'orario degli eventi in base al fuso orario geografico.</li>
     </ul>
 
