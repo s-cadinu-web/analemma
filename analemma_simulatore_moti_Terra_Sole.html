@@ -1,141 +1,462 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analemma - Simulatore Moti Terra-Sole (v41 - Fix Navigazione)</title>
     <style>
         /* --- STILI BASE --- */
-        body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background: #121212; 
-            color: #e0e0e0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            margin: 0; 
-            padding: 10px; 
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px;
             min-height: 100vh;
             box-sizing: border-box;
         }
-        
+
         /* --- HEADER --- */
         .header-container {
-            width: 100%; max-width: 1100px; text-align: center;
-            margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;
+            width: 100%;
+            max-width: 1100px;
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
         }
+
         .app-title {
-            margin: 0; font-size: 2em; font-weight: 800; letter-spacing: 2px;
-            color: #4facfe; text-transform: uppercase; display: inline-block;
+            margin: 0;
+            font-size: 2em;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #4facfe;
+            text-transform: uppercase;
+            display: inline-block;
         }
-        .app-subtitle { font-size: 1em; color: #aaa; font-weight: 400; margin-left: 10px; }
-        .date-row { margin-top: 5px; font-size: 1.1em; }
-        .main-date { color: #FFD700; font-weight: bold; }
-        .day-counter { color: #888; font-size: 0.9em; margin-left: 5px; }
-        .season-label { color: #ccc; font-style: italic; margin-left: 10px; padding-left: 10px; border-left: 1px solid #555; }
+
+        .app-subtitle {
+            font-size: 1em;
+            color: #aaa;
+            font-weight: 400;
+            margin-left: 10px;
+        }
+
+        .date-row {
+            margin-top: 5px;
+            font-size: 1.1em;
+        }
+
+        .main-date {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .day-counter {
+            color: #888;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+
+        .season-label {
+            color: #ccc;
+            font-style: italic;
+            margin-left: 10px;
+            padding-left: 10px;
+            border-left: 1px solid #555;
+        }
 
         /* --- LAYOUT --- */
-        .main-layout { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 1100px; }
-        .top-deck { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: stretch; }
-        .bottom-deck { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; justify-content: center; }
-        
-        /* PANNELLI */
-        .deck-panel { 
-            background: #1e1e1e; padding: 10px; border-radius: 8px; border: 1px solid #333;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; 
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 1100px;
         }
-        .deck-panel h3 { margin: 0 0 8px 0; color: #bbb; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
-        .wide-panel { flex: 1 1 400px; }
-        .control-deck { flex: 1; min-width: 320px; max-width: 400px; display: flex; flex-direction: column; gap: 8px; justify-content: flex-start; }
 
-        canvas { background: #000; border-radius: 4px; border: 1px solid #444; display: block; }
+        .top-deck {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .bottom-deck {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* PANNELLI */
+        .deck-panel {
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .deck-panel h3 {
+            margin: 0 0 8px 0;
+            color: #bbb;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .wide-panel {
+            flex: 1 1 400px;
+        }
+
+        .control-deck {
+            flex: 1;
+            min-width: 320px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: flex-start;
+        }
+
+        canvas {
+            background: #000;
+            border-radius: 4px;
+            border: 1px solid #444;
+            display: block;
+        }
 
         /* --- PULSANTI INFO --- */
         .info-btn-context {
-            position: absolute; top: 5px; right: 5px; width: 22px; height: 22px;
-            background: rgba(255, 255, 255, 0.1); color: #aaa; border: 1px solid #555;
-            border-radius: 50%; font-size: 14px; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 22px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            border: 1px solid #555;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
         }
-        .info-btn-context:hover { background: #2196F3; color: white; border-color: #2196F3; transform: scale(1.1); }
+
+        .info-btn-context:hover {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+            transform: scale(1.1);
+        }
 
         /* --- CONTROLLI --- */
-        .ctrl-group { background: #252525; padding: 6px 10px; border-radius: 6px; width: 100%; box-sizing: border-box; border-left: 3px solid #555; }
-        .ctrl-group.time { border-color: #FFD700; }
-        .ctrl-group.geo { border-color: #4facfe; }
-        .ctrl-group.play { border-color: #FF5722; }
-        .ctrl-group.season-bar { border-color: #e6db74; padding: 4px 10px; }
+        .ctrl-group {
+            background: #252525;
+            padding: 6px 10px;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            border-left: 3px solid #555;
+        }
 
-        .ctrl-row { display: flex; justify-content: space-between; align-items: center; gap: 5px; margin-bottom: 4px; }
-        label { font-size: 0.75em; color: #aaa; font-weight: 600; text-transform: uppercase; }
-        
-        input[type=range] { width: 100%; height: 4px; cursor: pointer; accent-color: #4CAF50; }
-        input[type=date] { background: #333; color: #fff; border: none; padding: 2px 5px; border-radius: 3px; font-family: inherit; font-size: 0.9em; }
-        input[type=number] { background: #333; color: #fff; border: none; padding: 2px; width: 50px; text-align: center; border-radius: 3px; font-size: 0.9em; }
-        
-        button { cursor: pointer; border: none; border-radius: 3px; padding: 4px 8px; font-size: 0.8em; font-weight: bold; transition: 0.2s; }
-        .btn-nav { background: #444; color: #ccc; min-width: 30px; }
-        .btn-nav:hover { background: #666; color: #fff; }
-        .btn-main-help { background: #2196F3; color: white; width: 100%; padding: 8px; margin-bottom: 5px; font-size: 0.9em; }
-        .btn-action { background: #FF5722; color: white; width: 100%; }
-        .val-disp { font-family: monospace; color: #4facfe; font-size: 0.9em; }
+        .ctrl-group.time {
+            border-color: #FFD700;
+        }
 
-        .season-btn { flex: 1; color: #000; font-size: 0.75em; text-transform: uppercase; padding: 5px 0; }
-        .s-spring { background: #8BC34A; }
-        .s-summer { background: #FF9800; }
-        .s-autumn { background: #FFC107; }
-        .s-winter { background: #03A9F4; }
-        .season-btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
+        .ctrl-group.geo {
+            border-color: #4facfe;
+        }
+
+        .ctrl-group.play {
+            border-color: #FF5722;
+        }
+
+        .ctrl-group.season-bar {
+            border-color: #e6db74;
+            padding: 4px 10px;
+        }
+
+        .ctrl-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 4px;
+        }
+
+        label {
+            font-size: 0.75em;
+            color: #aaa;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            accent-color: #4CAF50;
+        }
+
+        input[type=date] {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: 0.9em;
+        }
+
+        input[type=number] {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 2px;
+            width: 50px;
+            text-align: center;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 3px;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-nav {
+            background: #444;
+            color: #ccc;
+            min-width: 30px;
+        }
+
+        .btn-nav:hover {
+            background: #666;
+            color: #fff;
+        }
+
+        .btn-main-help {
+            background: #2196F3;
+            color: white;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .btn-action {
+            background: #FF5722;
+            color: white;
+            width: 100%;
+        }
+
+        .val-disp {
+            font-family: monospace;
+            color: #4facfe;
+            font-size: 0.9em;
+        }
+
+        .season-btn {
+            flex: 1;
+            color: #000;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            padding: 5px 0;
+        }
+
+        .s-spring {
+            background: #8BC34A;
+        }
+
+        .s-summer {
+            background: #FF9800;
+        }
+
+        .s-autumn {
+            background: #FFC107;
+        }
+
+        .s-winter {
+            background: #03A9F4;
+        }
+
+        .season-btn:hover {
+            filter: brightness(1.2);
+            transform: translateY(-1px);
+        }
 
         /* --- MODALE --- */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); backdrop-filter: blur(5px); }
-        .modal-content { 
-            background-color: #222; margin: 3vh auto; padding: 0; 
-            border: 1px solid #555; width: 90%; max-width: 800px; 
-            border-radius: 8px; color: #ccc; max-height: 90vh; display: flex; flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
         }
-        .modal-header { padding: 15px 20px; background: #2a2a2a; border-bottom: 1px solid #444; display: flex; justify-content: space-between; align-items: center; border-radius: 8px 8px 0 0; }
-        .modal-header h2 { margin: 0; color: #FFD700; font-size: 1.4em; }
-        .close-btn { font-size: 28px; cursor: pointer; color: #fff; font-weight: bold; line-height: 1; }
-        .modal-body { padding: 20px; overflow-y: auto; line-height: 1.6; font-size: 1.05em; }
-        
-        .concept-box { background: #2a2a2a; border-left: 4px solid #FFD700; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
-        .concept-title { color: #FFD700; font-weight: bold; margin-bottom: 8px; display: block; text-transform: uppercase; font-size: 0.9em; border-bottom: 1px solid #444; padding-bottom: 5px; }
-        .def-term { color: #4facfe; font-weight: bold; }
-        ul.didactic-list { padding-left: 20px; margin-top: 0; }
-        ul.didactic-list li { margin-bottom: 8px; }
+
+        .modal-content {
+            background-color: #222;
+            margin: 3vh auto;
+            padding: 0;
+            border: 1px solid #555;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 8px;
+            color: #ccc;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            background: #2a2a2a;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #FFD700;
+            font-size: 1.4em;
+        }
+
+        .close-btn {
+            font-size: 28px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .concept-box {
+            background: #2a2a2a;
+            border-left: 4px solid #FFD700;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .concept-title {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .def-term {
+            color: #4facfe;
+            font-weight: bold;
+        }
+
+        ul.didactic-list {
+            padding-left: 20px;
+            margin-top: 0;
+        }
+
+        ul.didactic-list li {
+            margin-bottom: 8px;
+        }
     </style>
     <style>
         /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
-            .app-title { font-size: 1.5em; }
-            .top-deck, .bottom-deck { flex-direction: column; }
-            .wide-panel, .deck-panel, .control-deck { 
-                width: 100%; 
-                min-width: 0; 
-                flex: 1 1 auto; 
+            .app-title {
+                font-size: 1.5em;
+            }
+
+            .top-deck,
+            .bottom-deck {
+                flex-direction: column;
+            }
+
+            .wide-panel,
+            .deck-panel,
+            .control-deck {
+                width: 100%;
+                min-width: 0;
+                flex: 1 1 auto;
                 max-width: none;
             }
+
             canvas {
                 width: 100% !important;
                 height: auto !important;
                 max-width: 100%;
             }
-            .ctrl-row { flex-wrap: wrap; }
-            .btn-nav, button { padding: 8px 12px; font-size: 1em; }
-            input[type=range] { height: 6px; }
-            
-            /* Fix for canvas internal aspect ratio visual */
-            #analemmaCanvas, #dayPathCanvas {
-                 aspect-ratio: 480 / 220;
+
+            .ctrl-row {
+                flex-wrap: wrap;
             }
-            #orbitCanvas, #earthCanvas {
-                 aspect-ratio: 1 / 1;
+
+            .btn-nav,
+            button {
+                padding: 8px 12px;
+                font-size: 1em;
+            }
+
+            input[type=range] {
+                height: 6px;
+            }
+
+            /* Fix for canvas internal aspect ratio visual */
+            #analemmaCanvas {
+                aspect-ratio: 480 / 220;
+            }
+
+            #dayPathCanvas {
+                aspect-ratio: 750 / 220;
+            }
+
+            #orbitCanvas,
+            #earthCanvas {
+                aspect-ratio: 1 / 1;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="header-container">
@@ -147,18 +468,18 @@
             <span id="dateDisplay" class="main-date">21 Marzo</span>
             <span id="dayCounterDisplay" class="day-counter">(giorno 80)</span>
             <span id="seasonDisplay" class="season-label">Equinozio di Primavera</span>
-		<div style="margin-top: 8px;">
-        <a href="index.html" style="color:#FFD700; text-decoration:none; font-weight:bold;">
-            ← Torna alla Home
-        </a>
-    </div>
+            <div style="margin-top: 8px;">
+                <a href="index.html" style="color:#FFD700; text-decoration:none; font-weight:bold;">
+                    ← Torna alla Home
+                </a>
+            </div>
 
         </div>
     </div>
 
     <div class="main-layout">
         <div class="top-deck">
-            
+
             <div class="deck-panel">
                 <button class="info-btn-context" onclick="showHelp('orbita')">?</button>
                 <h3>1. Orbita (Rivoluzione)</h3>
@@ -178,11 +499,14 @@
                         <input type="range" id="yearSlider" min="1" max="365" step="1" value="80" title="Scorri l'anno">
                     </div>
                     <div class="ctrl-row">
-                        <button class="btn-nav" onclick="jumpToMonthStart(-1)" title="Mese Precedente">|&lt;&lt; M</button>
+                        <button class="btn-nav" onclick="jumpToMonthStart(-1)" title="Mese Precedente">|&lt;&lt;
+                            M</button>
                         <button class="btn-nav" onclick="changeDay(-1)">-1G</button>
-                        <button class="btn-nav" style="flex-grow:1; background:#4CAF50; color:white;" onclick="togglePlayYear()" id="playYearBtn">Play Anno</button>
+                        <button class="btn-nav" style="flex-grow:1; background:#4CAF50; color:white;"
+                            onclick="togglePlayYear()" id="playYearBtn">Play Anno</button>
                         <button class="btn-nav" onclick="changeDay(1)">+1G</button>
-                        <button class="btn-nav" onclick="jumpToMonthStart(1)" title="Mese Successivo">M &gt;&gt;|</button>
+                        <button class="btn-nav" onclick="jumpToMonthStart(1)" title="Mese Successivo">M
+                            &gt;&gt;|</button>
                     </div>
                 </div>
 
@@ -198,13 +522,18 @@
                 <div class="ctrl-group play">
                     <div class="ctrl-row">
                         <label>Rotazione (Ora UTC)</label>
-                        <span id="timeValue" class="val-disp">12:00</span>
+                        <div>
+                            <span id="timeValue" class="val-disp">12:00</span>
+                            <span id="altValue" class="val-disp"
+                                style="margin-left:8px; color:#FFD700; font-weight:bold;">h: --°</span>
+                        </div>
                     </div>
                     <div class="ctrl-row">
                         <input type="range" id="timeSlider" min="0" max="23.99" step="0.01" value="12">
                     </div>
                     <div class="ctrl-row">
-                        <button class="btn-action" onclick="togglePlayDay()" id="playDayBtn">Play Giorno (Rotazione)</button>
+                        <button class="btn-action" onclick="togglePlayDay()" id="playDayBtn">Play Giorno
+                            (Rotazione)</button>
                     </div>
                 </div>
 
@@ -244,7 +573,7 @@
             <div class="deck-panel wide-panel">
                 <button class="info-btn-context" onclick="showHelp('percorso')">?</button>
                 <h3>4. Percorso Solare (Oggi)</h3>
-                <canvas id="dayPathCanvas" width="480" height="220"></canvas>
+                <canvas id="dayPathCanvas" width="750" height="220"></canvas>
             </div>
         </div>
 
@@ -370,16 +699,17 @@
         const earthCtx = document.getElementById('earthCanvas').getContext('2d');
         const anaCtx = document.getElementById('analemmaCanvas').getContext('2d');
         const pathCtx = document.getElementById('dayPathCanvas').getContext('2d');
-        
+
         const dateDisplay = document.getElementById('dateDisplay');
         const dayCounterDisplay = document.getElementById('dayCounterDisplay');
         const seasonDisplay = document.getElementById('seasonDisplay');
         const utcDisplay = document.getElementById('utcValue');
-        
+
         const dateInput = document.getElementById('dateInput');
         const yearSlider = document.getElementById('yearSlider');
         const timeSlider = document.getElementById('timeSlider');
         const timeValue = document.getElementById('timeValue');
+        const altValue = document.getElementById('altValue');
         const latSlider = document.getElementById('latSlider');
         const latInput = document.getElementById('latInput');
         const lonSlider = document.getElementById('lonSlider');
@@ -387,14 +717,14 @@
 
         // STATO INIZIALE
         let currentYear = 2025;
-        let dayOfYear = 80; 
-        let currentUTC = 12.0; 
-        let obsLat = 40.3;   
-        let obsLon = 9.3;    
-        let utcOffset = 1; 
+        let dayOfYear = 80;
+        let currentUTC = 12.0;
+        let obsLat = 40.3;
+        let obsLon = 9.3;
+        let utcOffset = 1;
         let isPlayingYear = false;
         let isPlayingDay = false;
-        const months = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+        const months = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 
         // --- HELPERS ---
         function isLeap(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
@@ -403,16 +733,16 @@
         function toRad(deg) { return deg * Math.PI / 180; }
         function toDeg(rad) { return rad * 180 / Math.PI; }
         function formatTime(dec) {
-            let h = Math.floor(dec); let m = Math.floor((dec-h)*60);
-            if(h>=24) h-=24; if(h<0) h+=24;
-            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+            let h = Math.floor(dec); let m = Math.floor((dec - h) * 60);
+            if (h >= 24) h -= 24; if (h < 0) h += 24;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
         function formatDur(dec) {
-            let h = Math.floor(dec); let m = Math.round((dec-h)*60);
-            if(m===60){m=0; h++;}
-            return `${h}h ${m.toString().padStart(2,'0')}`;
+            let h = Math.floor(dec); let m = Math.round((dec - h) * 60);
+            if (m === 60) { m = 0; h++; }
+            return `${h}h ${m.toString().padStart(2, '0')}`;
         }
-        
+
         // FIX DATA: Uso sempre ore 12:00 per evitare problemi con Ora Legale
         function getIsoDateFromDay(idx) {
             let d = new Date(currentYear, 0, 1, 12, 0, 0);
@@ -428,13 +758,13 @@
             let y = parseInt(parts[0]);
             let m = parseInt(parts[1]) - 1;
             let d = parseInt(parts[2]);
-            
+
             // Cambio anno se necessario
-            if(y !== currentYear) {
+            if (y !== currentYear) {
                 currentYear = y;
                 updateSliderMax();
             }
-            
+
             let dateObj = new Date(y, m, d, 12, 0, 0);
             let start = new Date(y, 0, 1, 12, 0, 0);
             let diff = dateObj - start;
@@ -451,9 +781,9 @@
             // Adatto l'orbita se l'anno è bisestile
             let daysInY = getDaysInYear(currentYear);
             let effectiveDay = day;
-            if(daysInY === 366) effectiveDay = day * (365/366);
+            if (daysInY === 366) effectiveDay = day * (365 / 366);
 
-            const declination = 23.45 * Math.sin(toRad(360/365 * (effectiveDay - 81))); 
+            const declination = 23.45 * Math.sin(toRad(360 / 365 * (effectiveDay - 81)));
             const B = toRad((360 / 365) * (effectiveDay - 81));
             const eot = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
             return { declination, eot };
@@ -461,94 +791,94 @@
 
         function getSolarPosition(lat, declination, hourAngleDeg) {
             const latRad = toRad(lat); const decRad = toRad(declination); const hRad = toRad(hourAngleDeg);
-            const sinAlt = Math.sin(latRad)*Math.sin(decRad) + Math.cos(latRad)*Math.cos(decRad)*Math.cos(hRad);
+            const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(hRad);
             const altDeg = toDeg(Math.asin(sinAlt));
             const y = Math.sin(hRad);
-            const x = Math.cos(hRad)*Math.sin(latRad) - Math.tan(decRad)*Math.cos(latRad);
+            const x = Math.cos(hRad) * Math.sin(latRad) - Math.tan(decRad) * Math.cos(latRad);
             const azDeg = toDeg(Math.atan2(y, x));
             return { alt: altDeg, az: azDeg };
         }
 
         // --- DISEGNO ---
         function drawOrbit() {
-            orbitCtx.clearRect(0,0,280,280);
-            const cx=140, cy=140, r=90;
-            orbitCtx.beginPath(); orbitCtx.arc(cx,cy,12,0,Math.PI*2); orbitCtx.fillStyle='#FFD700'; orbitCtx.fill();
-            orbitCtx.beginPath(); orbitCtx.arc(cx,cy,r,0,Math.PI*2); orbitCtx.strokeStyle='#555'; orbitCtx.stroke();
-            
+            orbitCtx.clearRect(0, 0, 280, 280);
+            const cx = 140, cy = 140, r = 90;
+            orbitCtx.beginPath(); orbitCtx.arc(cx, cy, 12, 0, Math.PI * 2); orbitCtx.fillStyle = '#FFD700'; orbitCtx.fill();
+            orbitCtx.beginPath(); orbitCtx.arc(cx, cy, r, 0, Math.PI * 2); orbitCtx.strokeStyle = '#555'; orbitCtx.stroke();
+
             let daysInY = getDaysInYear(currentYear);
-            let normDay = dayOfYear * (365/daysInY);
+            let normDay = dayOfYear * (365 / daysInY);
             const angle = -((normDay - 80) / 365) * Math.PI * 2;
-            
-            const ex = cx + Math.cos(angle)*r; const ey = cy + Math.sin(angle)*r;
-            orbitCtx.beginPath(); orbitCtx.arc(ex,ey,6,0,Math.PI*2); orbitCtx.fillStyle='#2196F3'; orbitCtx.fill();
-            orbitCtx.fillStyle='#aaa'; orbitCtx.font="10px Arial"; 
+
+            const ex = cx + Math.cos(angle) * r; const ey = cy + Math.sin(angle) * r;
+            orbitCtx.beginPath(); orbitCtx.arc(ex, ey, 6, 0, Math.PI * 2); orbitCtx.fillStyle = '#2196F3'; orbitCtx.fill();
+            orbitCtx.fillStyle = '#aaa'; orbitCtx.font = "10px Arial";
             // Mostra Mese nella label orbita
-            let d = new Date(currentYear, 0, 1, 12,0,0);
-            d.setDate(d.getDate() + Math.floor(dayOfYear-1));
-            orbitCtx.fillText(d.getDate() + " " + months[d.getMonth()].substring(0,3), ex+10, ey-10);
+            let d = new Date(currentYear, 0, 1, 12, 0, 0);
+            d.setDate(d.getDate() + Math.floor(dayOfYear - 1));
+            orbitCtx.fillText(d.getDate() + " " + months[d.getMonth()].substring(0, 3), ex + 10, ey - 10);
         }
 
         function drawEarth() {
-            earthCtx.clearRect(0,0,280,280);
-            const cx=140, cy=140, r=85;
+            earthCtx.clearRect(0, 0, 280, 280);
+            const cx = 140, cy = 140, r = 85;
             const tilt = toRad(23.5);
             const sunP = getSunParams(dayOfYear);
             const rotAngle = toRad((currentUTC - 12) * 15);
 
-            earthCtx.save(); earthCtx.translate(cx, cy); earthCtx.rotate(-tilt); 
-            earthCtx.beginPath(); earthCtx.arc(0,0,r,0,Math.PI*2); earthCtx.fillStyle='#0d1b2a'; earthCtx.fill();
+            earthCtx.save(); earthCtx.translate(cx, cy); earthCtx.rotate(-tilt);
+            earthCtx.beginPath(); earthCtx.arc(0, 0, r, 0, Math.PI * 2); earthCtx.fillStyle = '#0d1b2a'; earthCtx.fill();
             earthCtx.save(); earthCtx.rotate(toRad(sunP.declination));
-            earthCtx.beginPath(); earthCtx.arc(0,0,r, -Math.PI/2, Math.PI/2); earthCtx.fillStyle='#4facfe'; earthCtx.fill(); earthCtx.restore();
+            earthCtx.beginPath(); earthCtx.arc(0, 0, r, -Math.PI / 2, Math.PI / 2); earthCtx.fillStyle = '#4facfe'; earthCtx.fill(); earthCtx.restore();
 
-            earthCtx.save(); earthCtx.beginPath(); earthCtx.arc(0,0,r,0,Math.PI*2); earthCtx.clip(); 
-            drawLatCircle(earthCtx, r, 0, 'lime', 2); 
+            earthCtx.save(); earthCtx.beginPath(); earthCtx.arc(0, 0, r, 0, Math.PI * 2); earthCtx.clip();
+            drawLatCircle(earthCtx, r, 0, 'lime', 2);
             drawLatCircle(earthCtx, r, 23.5, 'orange', 1); drawLatCircle(earthCtx, r, -23.5, 'orange', 1);
-            drawLatCircle(earthCtx, r, 66.5, 'white', 1.5, [3,3]); drawLatCircle(earthCtx, r, -66.5, 'white', 1.5, [3,3]);
-            drawLatCircle(earthCtx, r, obsLat, 'cyan', 2, [4,2]);
-            drawMeridian(earthCtx, r, 0, rotAngle, 'white', 1, [4,4]);
+            drawLatCircle(earthCtx, r, 66.5, 'white', 1.5, [3, 3]); drawLatCircle(earthCtx, r, -66.5, 'white', 1.5, [3, 3]);
+            drawLatCircle(earthCtx, r, obsLat, 'cyan', 2, [4, 2]);
+            drawMeridian(earthCtx, r, 0, rotAngle, 'white', 1, [4, 4]);
             drawMeridian(earthCtx, r, obsLon, rotAngle, 'cyan', 2);
             drawObserver(earthCtx, r, obsLat, obsLon, rotAngle);
-            earthCtx.restore(); 
+            earthCtx.restore();
 
-            earthCtx.beginPath(); earthCtx.arc(0,0,r,0,Math.PI*2); earthCtx.strokeStyle='#888'; earthCtx.lineWidth=1; earthCtx.stroke();
-            earthCtx.beginPath(); earthCtx.moveTo(0,-r-12); earthCtx.lineTo(0,r+12); earthCtx.strokeStyle='red'; earthCtx.lineWidth=2; earthCtx.stroke();
+            earthCtx.beginPath(); earthCtx.arc(0, 0, r, 0, Math.PI * 2); earthCtx.strokeStyle = '#888'; earthCtx.lineWidth = 1; earthCtx.stroke();
+            earthCtx.beginPath(); earthCtx.moveTo(0, -r - 12); earthCtx.lineTo(0, r + 12); earthCtx.strokeStyle = 'red'; earthCtx.lineWidth = 2; earthCtx.stroke();
             earthCtx.fillStyle = 'red'; earthCtx.font = "bold 14px Arial"; earthCtx.textAlign = "center";
             earthCtx.textBaseline = "bottom"; earthCtx.fillText("N", 0, -r - 15);
             earthCtx.textBaseline = "top"; earthCtx.fillText("S", 0, r + 15);
-            earthCtx.restore(); 
+            earthCtx.restore();
         }
 
-        function drawLatCircle(ctx, R, latDeg, col, w, dash=[]) {
-            ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=w; ctx.setLineDash(dash);
-            let y = -R * Math.sin(toRad(latDeg)); let rc = R * Math.cos(toRad(latDeg)); 
+        function drawLatCircle(ctx, R, latDeg, col, w, dash = []) {
+            ctx.beginPath(); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash(dash);
+            let y = -R * Math.sin(toRad(latDeg)); let rc = R * Math.cos(toRad(latDeg));
             ctx.moveTo(-rc, y); ctx.lineTo(rc, y); ctx.stroke(); ctx.setLineDash([]);
         }
-        function drawMeridian(ctx, R, lon, rot, col, w, dash=[]) {
-            ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=w; ctx.setLineDash(dash);
-            let theta = toRad(lon) + rot; let first=true;
-            for(let l=-90; l<=90; l+=5) {
-                let phi=toRad(l); let rl=R*Math.cos(phi);
-                let x=rl*Math.sin(theta); let y=-R*Math.sin(phi); let z=rl*Math.cos(theta);
-                if(z>-10) { if(first){ctx.moveTo(x,y); first=false;} else ctx.lineTo(x,y); } else first=true;
+        function drawMeridian(ctx, R, lon, rot, col, w, dash = []) {
+            ctx.beginPath(); ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash(dash);
+            let theta = toRad(lon) + rot; let first = true;
+            for (let l = -90; l <= 90; l += 5) {
+                let phi = toRad(l); let rl = R * Math.cos(phi);
+                let x = rl * Math.sin(theta); let y = -R * Math.sin(phi); let z = rl * Math.cos(theta);
+                if (z > -10) { if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y); } else first = true;
             }
             ctx.stroke(); ctx.setLineDash([]);
         }
         function drawObserver(ctx, R, lat, lon, rot) {
-            let theta=toRad(lon)+rot; let phi=toRad(lat); let rl=R*Math.cos(phi);
-            let x=rl*Math.sin(theta); let y=-R*Math.sin(phi); let z=rl*Math.cos(theta);
-            if(z>0) { ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fillStyle='red'; ctx.fill(); ctx.stroke(); }
+            let theta = toRad(lon) + rot; let phi = toRad(lat); let rl = R * Math.cos(phi);
+            let x = rl * Math.sin(theta); let y = -R * Math.sin(phi); let z = rl * Math.cos(theta);
+            if (z > 0) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fillStyle = 'red'; ctx.fill(); ctx.stroke(); }
         }
 
         function drawAnalemma() {
-            anaCtx.clearRect(0,0,480,220);
-            const w=480, h=220, cx=w/2, bot=h-20;
-            const pxDeg = (h-30)/90; const pxMin = 10;
-            anaCtx.strokeStyle='#333'; anaCtx.lineWidth=1; anaCtx.font="10px monospace"; anaCtx.fillStyle="#666"; anaCtx.textAlign="center";
-            for(let d=0; d<=90; d+=15) { let y = bot - d*pxDeg; anaCtx.beginPath(); anaCtx.moveTo(20,y); anaCtx.lineTo(w-20,y); anaCtx.stroke(); anaCtx.fillText(d+"°", 10, y+3); }
-            for(let m=-20; m<=20; m+=5) { let x = cx + m*pxMin; anaCtx.beginPath(); anaCtx.moveTo(x,10); anaCtx.lineTo(x,bot); anaCtx.stroke(); anaCtx.fillText(m+"m", x, bot+12); }
-            anaCtx.strokeStyle='#555'; anaCtx.beginPath(); anaCtx.moveTo(cx,10); anaCtx.lineTo(cx,bot); anaCtx.stroke();
-            anaCtx.fillStyle='#aaa'; anaCtx.fillText("Mezzogiorno (12:00)", cx, 12);
+            anaCtx.clearRect(0, 0, 480, 220);
+            const w = 480, h = 220, cx = w / 2, bot = h - 20;
+            const pxDeg = (h - 30) / 90; const pxMin = 10;
+            anaCtx.strokeStyle = '#333'; anaCtx.lineWidth = 1; anaCtx.font = "10px monospace"; anaCtx.fillStyle = "#666"; anaCtx.textAlign = "center";
+            for (let d = 0; d <= 90; d += 15) { let y = bot - d * pxDeg; anaCtx.beginPath(); anaCtx.moveTo(20, y); anaCtx.lineTo(w - 20, y); anaCtx.stroke(); anaCtx.fillText(d + "°", 10, y + 3); }
+            for (let m = -20; m <= 20; m += 5) { let x = cx + m * pxMin; anaCtx.beginPath(); anaCtx.moveTo(x, 10); anaCtx.lineTo(x, bot); anaCtx.stroke(); anaCtx.fillText(m + "m", x, bot + 12); }
+            anaCtx.strokeStyle = '#555'; anaCtx.beginPath(); anaCtx.moveTo(cx, 10); anaCtx.lineTo(cx, bot); anaCtx.stroke();
+            anaCtx.fillStyle = '#aaa'; anaCtx.fillText("Mezzogiorno (12:00)", cx, 12);
 
             // Analemma Loop (Chiuso)
             let pStart = getSunParams(1);
@@ -556,167 +886,178 @@
             let xStart = cx - pStart.eot * pxMin;
             let yStart = bot - posStart.alt * pxDeg;
 
-            anaCtx.beginPath(); anaCtx.strokeStyle='rgba(255,215,0,0.8)'; anaCtx.lineWidth=2;
+            anaCtx.beginPath(); anaCtx.strokeStyle = 'rgba(255,215,0,0.8)'; anaCtx.lineWidth = 2;
             anaCtx.moveTo(xStart, yStart);
-            
+
             let totalD = getDaysInYear(currentYear);
-            for(let d=2; d<=totalD; d++) {
-                let p=getSunParams(d); let pos=getSolarPosition(obsLat,p.declination,0);
-                let y=bot - pos.alt*pxDeg; let x=cx - p.eot*pxMin;
-                anaCtx.lineTo(x,y);
+            for (let d = 2; d <= totalD; d++) {
+                let p = getSunParams(d); let pos = getSolarPosition(obsLat, p.declination, 0);
+                let y = bot - pos.alt * pxDeg; let x = cx - p.eot * pxMin;
+                anaCtx.lineTo(x, y);
             }
             anaCtx.lineTo(xStart, yStart); // Chiude il loop
             anaCtx.stroke();
 
-            let curP=getSunParams(dayOfYear); let curPos=getSolarPosition(obsLat,curP.declination,0);
-            if(curPos.alt>-5) {
-                let x=cx-curP.eot*pxMin; let y=bot-curPos.alt*pxDeg;
-                anaCtx.beginPath(); anaCtx.arc(x,y,5,0,Math.PI*2); anaCtx.fillStyle='red'; anaCtx.fill();
-                anaCtx.fillStyle='white'; anaCtx.fillText(curPos.alt.toFixed(1)+"°", x+8, y-5);
+            let curP = getSunParams(dayOfYear); let curPos = getSolarPosition(obsLat, curP.declination, 0);
+            if (curPos.alt > -5) {
+                let x = cx - curP.eot * pxMin; let y = bot - curPos.alt * pxDeg;
+                anaCtx.beginPath(); anaCtx.arc(x, y, 5, 0, Math.PI * 2); anaCtx.fillStyle = 'red'; anaCtx.fill();
+                anaCtx.fillStyle = 'white'; anaCtx.fillText(curPos.alt.toFixed(1) + "°", x + 8, y - 5);
             }
         }
 
         function drawDayPath() {
-            pathCtx.clearRect(0,0,480,220);
-            const w=480, h=220, cx=w/2, bot=h-20;
-            const pxDeg = (h-30)/90; const pxAz = w/200;
-            pathCtx.strokeStyle='#333'; pathCtx.lineWidth=1; pathCtx.font="10px monospace"; pathCtx.fillStyle="#666"; pathCtx.textAlign="right";
-            for(let d=0; d<=90; d+=30) { let y=bot-d*pxDeg; pathCtx.beginPath(); pathCtx.moveTo(20,y); pathCtx.lineTo(w-20,y); pathCtx.stroke(); pathCtx.fillText(d+"°", 18, y+3); }
-            pathCtx.setLineDash([3,3]); pathCtx.beginPath();
-            pathCtx.moveTo(cx,0); pathCtx.lineTo(cx,bot); 
-            pathCtx.moveTo(cx-90*pxAz,0); pathCtx.lineTo(cx-90*pxAz,bot); 
-            pathCtx.moveTo(cx+90*pxAz,0); pathCtx.lineTo(cx+90*pxAz,bot); 
+            pathCtx.clearRect(0, 0, 750, 220);
+            const w = 750, h = 220, cx = w / 2, bot = h - 20;
+            const pxDeg = (h - 30) / 90; const pxAz = w / 300; // Scala adattata per +/- 150 gradi
+            pathCtx.strokeStyle = '#333'; pathCtx.lineWidth = 1; pathCtx.font = "10px monospace"; pathCtx.fillStyle = "#666"; pathCtx.textAlign = "right";
+            for (let d = 0; d <= 90; d += 30) { let y = bot - d * pxDeg; pathCtx.beginPath(); pathCtx.moveTo(20, y); pathCtx.lineTo(w - 20, y); pathCtx.stroke(); pathCtx.fillText(d + "°", 18, y + 3); }
+            pathCtx.setLineDash([3, 3]); pathCtx.beginPath();
+            pathCtx.moveTo(cx, 0); pathCtx.lineTo(cx, bot);
+            pathCtx.moveTo(cx - 90 * pxAz, 0); pathCtx.lineTo(cx - 90 * pxAz, bot);
+            pathCtx.moveTo(cx + 90 * pxAz, 0); pathCtx.lineTo(cx + 90 * pxAz, bot);
             pathCtx.stroke(); pathCtx.setLineDash([]);
-            pathCtx.textAlign="center"; pathCtx.fillText("SUD",cx,bot+12); pathCtx.fillText("EST",cx-90*pxAz,bot+12); pathCtx.fillText("OVEST",cx+90*pxAz,bot+12);
+            pathCtx.textAlign = "center"; pathCtx.fillText("SUD", cx, bot + 12); pathCtx.fillText("EST", cx - 90 * pxAz, bot + 12); pathCtx.fillText("OVEST", cx + 90 * pxAz, bot + 12);
 
-            let sunP=getSunParams(dayOfYear);
-            let mer = utcOffset*15; let tCorr = (mer-obsLon)*4 - sunP.eot;
-            let latR=toRad(obsLat); let decR=toRad(sunP.declination); let altR=toRad(-0.833);
-            let num = Math.sin(altR) - Math.sin(latR)*Math.sin(decR); let den = Math.cos(latR)*Math.cos(decR);
-            let cosH = num/den;
-            
-            pathCtx.font="bold 12px sans-serif";
-            if(cosH>=1) { pathCtx.textAlign="left"; pathCtx.fillStyle="#aaa"; pathCtx.fillText("Notte Polare", 30, 20); }
-            else if(cosH<=-1) { pathCtx.textAlign="left"; pathCtx.fillStyle="#FFD700"; pathCtx.fillText("Sole di Mezzanotte", 30, 20); }
+            let sunP = getSunParams(dayOfYear);
+            let mer = utcOffset * 15; let tCorr = (mer - obsLon) * 4 - sunP.eot;
+            let latR = toRad(obsLat); let decR = toRad(sunP.declination); let altR = toRad(-0.833);
+            let num = Math.sin(altR) - Math.sin(latR) * Math.sin(decR); let den = Math.cos(latR) * Math.cos(decR);
+            let cosH = num / den;
+
+            pathCtx.font = "bold 12px sans-serif";
+            if (cosH >= 1) { pathCtx.textAlign = "left"; pathCtx.fillStyle = "#aaa"; pathCtx.fillText("Notte Polare", 30, 20); }
+            else if (cosH <= -1) { pathCtx.textAlign = "left"; pathCtx.fillStyle = "#FFD700"; pathCtx.fillText("Sole di Mezzanotte", 30, 20); }
             else {
-                let hRad = Math.acos(cosH); let hDeg=toDeg(hRad); let hHrs=hDeg/15;
-                let rise = (12-hHrs) + tCorr/60; let set = (12+hHrs) + tCorr/60;
-                let dur = hHrs*2;
-                pathCtx.textAlign="left"; pathCtx.fillStyle="#FFD700"; pathCtx.fillText("Sorge: "+formatTime(rise), 30, 20);
-                pathCtx.fillStyle="#bbb"; pathCtx.fillText("Dì: "+formatDur(dur), 30, 38);
-                pathCtx.textAlign="right"; pathCtx.fillStyle="#FFD700"; pathCtx.fillText("Tramonta: "+formatTime(set), w-30, 20);
-                pathCtx.fillStyle="#bbb"; pathCtx.fillText("Notte: "+formatDur(24-dur), w-30, 38);
+                let hRad = Math.acos(cosH); let hDeg = toDeg(hRad); let hHrs = hDeg / 15;
+                let rise = (12 - hHrs) + tCorr / 60; let set = (12 + hHrs) + tCorr / 60;
+                let dur = hHrs * 2;
+                pathCtx.textAlign = "left"; pathCtx.fillStyle = "#FFD700"; pathCtx.fillText("Sorge: " + formatTime(rise), 30, 20);
+                pathCtx.fillStyle = "#bbb"; pathCtx.fillText("Dì: " + formatDur(dur), 30, 38);
+                pathCtx.textAlign = "right"; pathCtx.fillStyle = "#FFD700"; pathCtx.fillText("Tramonta: " + formatTime(set), w - 30, 20);
+                pathCtx.fillStyle = "#bbb"; pathCtx.fillText("Notte: " + formatDur(24 - dur), w - 30, 38);
             }
 
-            pathCtx.beginPath(); pathCtx.strokeStyle='red'; pathCtx.lineWidth=2; let started=false;
-            for(let ha=-180; ha<=180; ha+=2) {
-                let pos=getSolarPosition(obsLat,sunP.declination,ha);
-                if(pos.alt>=-2) {
-                    let x=cx + pos.az*pxAz; let y=bot - pos.alt*pxDeg;
-                    if(!started){pathCtx.moveTo(x,y); started=true;} else pathCtx.lineTo(x,y);
+            pathCtx.beginPath(); pathCtx.strokeStyle = 'red'; pathCtx.lineWidth = 2; let started = false;
+            for (let ha = -180; ha <= 180; ha += 2) {
+                let pos = getSolarPosition(obsLat, sunP.declination, ha);
+                if (pos.alt >= -2) {
+                    let x = cx + pos.az * pxAz; let y = bot - pos.alt * pxDeg;
+                    if (!started) { pathCtx.moveTo(x, y); started = true; } else pathCtx.lineTo(x, y);
                 }
             }
             pathCtx.stroke();
 
-            let civT=currentUTC; let solT=civT - tCorr/60; let haCur=(solT-12)*15;
-            let curP=getSolarPosition(obsLat,sunP.declination,haCur);
-            if(curP.alt>-5) {
-                let x=cx+curP.az*pxAz; let y=bot-curP.alt*pxDeg;
-                pathCtx.beginPath(); pathCtx.moveTo(x,y); pathCtx.lineTo(x,bot); pathCtx.strokeStyle='rgba(255,255,0,0.3)'; pathCtx.stroke();
-                pathCtx.beginPath(); pathCtx.arc(x,y,6,0,Math.PI*2); pathCtx.fillStyle='#FFD700'; pathCtx.fill();
-                pathCtx.fillStyle='#FFF'; pathCtx.textAlign='center'; pathCtx.fillText(formatTime(civT), x, y-12);
+            let civT = currentUTC; let solT = civT - tCorr / 60; let haCur = (solT - 12) * 15;
+            let curP = getSolarPosition(obsLat, sunP.declination, haCur);
+            if (curP.alt > -5) {
+                let x = cx + curP.az * pxAz; let y = bot - curP.alt * pxDeg;
+                pathCtx.beginPath(); pathCtx.moveTo(x, y); pathCtx.lineTo(x, bot); pathCtx.strokeStyle = 'rgba(255,255,0,0.3)'; pathCtx.stroke();
+                pathCtx.beginPath(); pathCtx.arc(x, y, 6, 0, Math.PI * 2); pathCtx.fillStyle = '#FFD700'; pathCtx.fill();
+                pathCtx.fillStyle = '#FFF'; pathCtx.textAlign = 'center'; pathCtx.fillText(formatTime(civT), x, y - 12);
             }
 
-            let noonP=getSolarPosition(obsLat,sunP.declination,0);
-            if(noonP.alt>0) {
-                let nx=cx; let civNoon = 12 + tCorr/60;
-                pathCtx.textAlign='center'; 
-                
+            let noonP = getSolarPosition(obsLat, sunP.declination, 0);
+            if (noonP.alt > 0) {
+                let nx = cx; let civNoon = 12 + tCorr / 60;
+                pathCtx.textAlign = 'center';
+
                 // TESTO ALLINEATO AL CENTRO IN ALTO (FIX)
-                pathCtx.font="bold 12px sans-serif"; pathCtx.fillStyle='#FFD700';
+                pathCtx.font = "bold 12px sans-serif"; pathCtx.fillStyle = '#FFD700';
                 pathCtx.fillText("Culminazione: " + formatTime(civNoon) + " (Ora Civile)", nx, 20);
-                
-                let ny=bot-noonP.alt*pxDeg;
-                pathCtx.font="11px sans-serif"; pathCtx.fillStyle='#4facfe';
-                pathCtx.fillText("Max Alt: "+noonP.alt.toFixed(1)+"°", nx, ny+18);
+
+                let ny = bot - noonP.alt * pxDeg;
+                pathCtx.font = "11px sans-serif"; pathCtx.fillStyle = '#4facfe';
+                pathCtx.fillText("Max Alt: " + noonP.alt.toFixed(1) + "°", nx, ny + 18);
             }
         }
 
         // --- LOGIC ---
         function render() {
             let maxD = getDaysInYear(currentYear);
-            if(dayOfYear > maxD) dayOfYear = 1; 
-            if(dayOfYear < 1) dayOfYear = maxD;
-            if(currentUTC>=24) currentUTC=0;
-            
+            if (dayOfYear > maxD) dayOfYear = 1;
+            if (dayOfYear < 1) dayOfYear = maxD;
+            if (currentUTC >= 24) currentUTC = 0;
+
             dateInput.value = getIsoDateFromDay(dayOfYear);
             yearSlider.max = maxD;
             yearSlider.value = Math.round(dayOfYear);
 
-            let dObj = new Date(currentYear, 0, 1, 12, 0, 0); 
+            let dObj = new Date(currentYear, 0, 1, 12, 0, 0);
             dObj.setDate(dObj.getDate() + Math.round(dayOfYear - 1));
-            
+
             dateDisplay.innerText = dObj.getDate() + " " + months[dObj.getMonth()] + " " + currentYear;
             dayCounterDisplay.innerText = "(giorno " + Math.round(dayOfYear) + ")";
-            
-            timeValue.innerText = formatTime(currentUTC); timeSlider.value=currentUTC;
 
-            if(dayOfYear>=78&&dayOfYear<=82) seasonDisplay.innerText="Equinozio di Primavera";
-            else if(dayOfYear>=170&&dayOfYear<=174) seasonDisplay.innerText="Solstizio d'Estate";
-            else if(dayOfYear>=264&&dayOfYear<=268) seasonDisplay.innerText="Equinozio d'Autunno";
-            else if(dayOfYear>=353&&dayOfYear<=357) seasonDisplay.innerText="Solstizio d'Inverno";
-            else seasonDisplay.innerHTML="&nbsp;";
+            timeValue.innerText = formatTime(currentUTC); timeSlider.value = currentUTC;
+
+            // CALCOLO ALTEZZA SOLE LIVE
+            let sunP_live = getSunParams(dayOfYear);
+            let mer_live = utcOffset * 15;
+            let tCorr_live = (mer_live - obsLon) * 4 - sunP_live.eot;
+            let solT_live = currentUTC - tCorr_live / 60;
+            let ha_live = (solT_live - 12) * 15;
+            let pos_live = getSolarPosition(obsLat, sunP_live.declination, ha_live);
+            altValue.innerText = "h: " + pos_live.alt.toFixed(1) + "°";
+            if (pos_live.alt < 0) altValue.style.color = "#555"; else altValue.style.color = "#FFD700";
+
+            if (dayOfYear >= 78 && dayOfYear <= 82) seasonDisplay.innerText = "Equinozio di Primavera";
+            else if (dayOfYear >= 170 && dayOfYear <= 174) seasonDisplay.innerText = "Solstizio d'Estate";
+            else if (dayOfYear >= 264 && dayOfYear <= 268) seasonDisplay.innerText = "Equinozio d'Autunno";
+            else if (dayOfYear >= 353 && dayOfYear <= 357) seasonDisplay.innerText = "Solstizio d'Inverno";
+            else seasonDisplay.innerHTML = "&nbsp;";
             drawOrbit(); drawEarth(); drawAnalemma(); drawDayPath();
         }
 
         // NUOVA LOGICA MESE (FIXED)
         function jumpToMonthStart(delta) {
-            isPlayingYear=false; document.getElementById('playYearBtn').innerText="Play Anno";
+            isPlayingYear = false; document.getElementById('playYearBtn').innerText = "Play Anno";
             let d = new Date(currentYear, 0, 1, 12, 0, 0);
             d.setDate(d.getDate() + Math.round(dayOfYear - 1));
             let isFirst = (d.getDate() === 1);
             d.setDate(1); // Vai al 1° del mese corrente
-            if(delta > 0) d.setMonth(d.getMonth() + 1);
-            else { if(isFirst) d.setMonth(d.getMonth() - 1); }
-            
+            if (delta > 0) d.setMonth(d.getMonth() + 1);
+            else { if (isFirst) d.setMonth(d.getMonth() - 1); }
+
             // Gestione cambio anno nei salti
-            if(d.getFullYear() !== currentYear) currentYear = d.getFullYear();
-            
+            if (d.getFullYear() !== currentYear) currentYear = d.getFullYear();
+
             let start = new Date(currentYear, 0, 1, 12, 0, 0);
             dayOfYear = Math.round((d - start) / (1000 * 60 * 60 * 24)) + 1;
             render();
         }
 
-        function changeDay(d) { isPlayingYear=false; document.getElementById('playYearBtn').innerText="Play Anno"; dayOfYear+=d; render(); }
-        function changeUTC(d) { utcOffset+=d; if(utcOffset>14) utcOffset=14; if(utcOffset<-12) utcOffset=-12; document.getElementById('utcValue').innerText="UTC "+(utcOffset>=0?"+":"")+utcOffset; render(); }
-        function jumpTo(d) { isPlayingYear=false; document.getElementById('playYearBtn').innerText="Play Anno"; dayOfYear=d; render(); }
-        function togglePlayYear() { isPlayingYear=!isPlayingYear; document.getElementById('playYearBtn').innerText=isPlayingYear?"Stop":"Play Anno"; if(isPlayingYear) animY(); }
-        function animY(){ if(!isPlayingYear)return; dayOfYear+=0.5; render(); requestAnimationFrame(animY); }
-        function togglePlayDay() { isPlayingDay=!isPlayingDay; document.getElementById('playDayBtn').innerText=isPlayingDay?"Stop":"Play Giorno"; if(isPlayingDay) animD(); }
-        function animD(){ if(!isPlayingDay)return; currentUTC+=0.1; render(); requestAnimationFrame(animD); }
+        function changeDay(d) { isPlayingYear = false; document.getElementById('playYearBtn').innerText = "Play Anno"; dayOfYear += d; render(); }
+        function changeUTC(d) { utcOffset += d; if (utcOffset > 14) utcOffset = 14; if (utcOffset < -12) utcOffset = -12; document.getElementById('utcValue').innerText = "UTC " + (utcOffset >= 0 ? "+" : "") + utcOffset; render(); }
+        function jumpTo(d) { isPlayingYear = false; document.getElementById('playYearBtn').innerText = "Play Anno"; dayOfYear = d; render(); }
+        function togglePlayYear() { isPlayingYear = !isPlayingYear; document.getElementById('playYearBtn').innerText = isPlayingYear ? "Stop" : "Play Anno"; if (isPlayingYear) animY(); }
+        function animY() { if (!isPlayingYear) return; dayOfYear += 0.5; render(); requestAnimationFrame(animY); }
+        function togglePlayDay() { isPlayingDay = !isPlayingDay; document.getElementById('playDayBtn').innerText = isPlayingDay ? "Stop" : "Play Giorno"; if (isPlayingDay) animD(); }
+        function animD() { if (!isPlayingDay) return; currentUTC += 0.1; render(); requestAnimationFrame(animD); }
 
-        dateInput.addEventListener('change', (e)=>{ updateFromInputDate(e.target.value); render(); });
-        yearSlider.addEventListener('input', (e)=>{ dayOfYear = parseInt(e.target.value); isPlayingYear = false; document.getElementById('playYearBtn').innerText="Play Anno"; render(); });
-        timeSlider.addEventListener('input', (e)=>{ currentUTC=parseFloat(e.target.value); render(); });
-        latSlider.addEventListener('input', (e)=>{ obsLat=parseFloat(e.target.value); latInput.value=obsLat; render(); });
-        latInput.addEventListener('change', (e)=>{ obsLat=parseFloat(e.target.value); latSlider.value=obsLat; render(); });
-        lonSlider.addEventListener('input', (e)=>{ obsLon=parseFloat(e.target.value); lonInput.value=obsLon; render(); });
-        lonInput.addEventListener('change', (e)=>{ obsLon=parseFloat(e.target.value); lonSlider.value=obsLon; render(); });
+        dateInput.addEventListener('change', (e) => { updateFromInputDate(e.target.value); render(); });
+        yearSlider.addEventListener('input', (e) => { dayOfYear = parseInt(e.target.value); isPlayingYear = false; document.getElementById('playYearBtn').innerText = "Play Anno"; render(); });
+        timeSlider.addEventListener('input', (e) => { currentUTC = parseFloat(e.target.value); render(); });
+        latSlider.addEventListener('input', (e) => { obsLat = parseFloat(e.target.value); latInput.value = obsLat; render(); });
+        latInput.addEventListener('change', (e) => { obsLat = parseFloat(e.target.value); latSlider.value = obsLat; render(); });
+        lonSlider.addEventListener('input', (e) => { obsLon = parseFloat(e.target.value); lonInput.value = obsLon; render(); });
+        lonInput.addEventListener('change', (e) => { obsLon = parseFloat(e.target.value); lonSlider.value = obsLon; render(); });
 
         const modal = document.getElementById("infoModal");
         const modalTitle = document.getElementById("modalTitle");
         const modalBody = document.getElementById("modalBody");
         function showHelp(topic) {
-            if(didacticContent[topic]) {
+            if (didacticContent[topic]) {
                 modalTitle.innerText = didacticContent[topic].title;
                 modalBody.innerHTML = didacticContent[topic].html;
                 modal.style.display = "block";
             }
         }
         function closeModal() { modal.style.display = "none"; }
-        window.onclick = function(e){if(e.target==modal) closeModal();}
+        window.onclick = function (e) { if (e.target == modal) closeModal(); }
 
         render();
     </script>
 </body>
+
 </html>
