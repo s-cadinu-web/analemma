@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analemma - Simulatore Moti Terra-Sole (v41 - Fix Navigazione)</title>
     <style>
         /* --- STILI BASE --- */
@@ -104,6 +105,35 @@
         .def-term { color: #4facfe; font-weight: bold; }
         ul.didactic-list { padding-left: 20px; margin-top: 0; }
         ul.didactic-list li { margin-bottom: 8px; }
+    </style>
+    <style>
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            .app-title { font-size: 1.5em; }
+            .top-deck, .bottom-deck { flex-direction: column; }
+            .wide-panel, .deck-panel, .control-deck { 
+                width: 100%; 
+                min-width: 0; 
+                flex: 1 1 auto; 
+                max-width: none;
+            }
+            canvas {
+                width: 100% !important;
+                height: auto !important;
+                max-width: 100%;
+            }
+            .ctrl-row { flex-wrap: wrap; }
+            .btn-nav, button { padding: 8px 12px; font-size: 1em; }
+            input[type=range] { height: 6px; }
+            
+            /* Fix for canvas internal aspect ratio visual */
+            #analemmaCanvas, #dayPathCanvas {
+                 aspect-ratio: 480 / 220;
+            }
+            #orbitCanvas, #earthCanvas {
+                 aspect-ratio: 1 / 1;
+            }
+        }
     </style>
 </head>
 <body>
